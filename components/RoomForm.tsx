@@ -2,13 +2,31 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { Room, RoomFormData } from '@/types/room';
-import { parseVertices, validateOrthogonalPolygon, generateId } from '@/utils/roomUtils';
+import { Room } from '@/types/room';
+import { generateId } from '@/utils/roomUtils';
+import { 
+  ShapeType, 
+  ShapeParams, 
+  defaultShapeParams,
+  generateRectangle,
+  generateLShape,
+  generateUShape
+} from '@/utils/presetShapes';
+
+interface RoomFormData {
+  name: string;
+  shapeType: ShapeType;
+  shapeParams: ShapeParams;
+  height: string;
+  floorColor: string;
+  wallColor: string;
+}
 
 const initialFormData: RoomFormData = {
   name: '',
-  verticesInput: '',
-  height: '2.5',
+  shapeType: 'rectangle',
+  shapeParams: defaultShapeParams,
+  height: '250', // cm
   floorColor: '#e0e0e0',
   wallColor: '#ffffff',
 };
@@ -18,29 +36,45 @@ export default function RoomForm() {
   const [formData, setFormData] = useState<RoomFormData>(initialFormData);
   const [error, setError] = useState<string>('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError('');
   };
 
+  const handleShapeParamChange = (paramName: string, value: string) => {
+    const numValue = parseInt(value) || 0;
+    setFormData((prev) => ({
+      ...prev,
+      shapeParams: {
+        ...prev.shapeParams,
+        [prev.shapeType]: {
+          ...prev.shapeParams[prev.shapeType],
+          [paramName]: numValue,
+        },
+      },
+    }));
+  };
+
+  const generateVertices = () => {
+    const { shapeType, shapeParams } = formData;
+    switch (shapeType) {
+      case 'rectangle':
+        return generateRectangle(shapeParams.rectangle);
+      case 'lShape':
+        return generateLShape(shapeParams.lShape);
+      case 'uShape':
+        return generateUShape(shapeParams.uShape);
+      default:
+        return [];
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // バリデーション
     if (!formData.name.trim()) {
       setError('部屋名を入力してください');
-      return;
-    }
-
-    const vertices = parseVertices(formData.verticesInput);
-    if (vertices.length === 0) {
-      setError('頂点の形式が正しくありません。例: 0,0 5,0 5,3 0,3');
-      return;
-    }
-
-    if (!validateOrthogonalPolygon(vertices)) {
-      setError('直交多角形（90度の角のみ）を入力してください');
       return;
     }
 
@@ -50,12 +84,13 @@ export default function RoomForm() {
       return;
     }
 
-    // 部屋を追加
+    const vertices = generateVertices();
+    
     const newRoom: Room = {
       id: generateId(),
       name: formData.name.trim(),
       vertices,
-      height,
+      height: height / 100, // cmをmに変換
       floorColor: formData.floorColor,
       wallColor: formData.wallColor,
     };
@@ -67,14 +102,166 @@ export default function RoomForm() {
     setError('');
   };
 
-  const handleExample = () => {
-    setFormData({
-      name: `サンプル部屋${rooms.length + 1}`,
-      verticesInput: '0,0 5,0 5,3 3,3 3,5 0,5',
-      height: '2.5',
-      floorColor: '#e0e0e0',
-      wallColor: '#ffffff',
-    });
+  const renderShapeParams = () => {
+    const { shapeType, shapeParams } = formData;
+    
+    switch (shapeType) {
+      case 'rectangle':
+        return (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                幅 (cm)
+              </label>
+              <input
+                type="number"
+                value={shapeParams.rectangle.width}
+                onChange={(e) => handleShapeParamChange('width', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min="10"
+                step="10"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                奥行き (cm)
+              </label>
+              <input
+                type="number"
+                value={shapeParams.rectangle.depth}
+                onChange={(e) => handleShapeParamChange('depth', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                min="10"
+                step="10"
+              />
+            </div>
+          </>
+        );
+      
+      case 'lShape':
+        return (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  全体幅 (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.lShape.width}
+                  onChange={(e) => handleShapeParamChange('width', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  全体奥行き (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.lShape.depth}
+                  onChange={(e) => handleShapeParamChange('depth', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  切り欠き幅 (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.lShape.cutoutWidth}
+                  onChange={(e) => handleShapeParamChange('cutoutWidth', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  切り欠き奥行き (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.lShape.cutoutDepth}
+                  onChange={(e) => handleShapeParamChange('cutoutDepth', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+            </div>
+          </>
+        );
+      
+      case 'uShape':
+        return (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  全体幅 (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.uShape.width}
+                  onChange={(e) => handleShapeParamChange('width', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  全体奥行き (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.uShape.depth}
+                  onChange={(e) => handleShapeParamChange('depth', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  開口部幅 (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.uShape.openingWidth}
+                  onChange={(e) => handleShapeParamChange('openingWidth', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  腕の奥行き (cm)
+                </label>
+                <input
+                  type="number"
+                  value={shapeParams.uShape.armDepth}
+                  onChange={(e) => handleShapeParamChange('armDepth', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="10"
+                  step="10"
+                />
+              </div>
+            </div>
+          </>
+        );
+    }
   };
 
   return (
@@ -95,26 +282,27 @@ export default function RoomForm() {
       </div>
 
       <div>
-        <label htmlFor="verticesInput" className="block text-sm font-medium text-gray-700 mb-1">
-          頂点座標（時計回り）
+        <label htmlFor="shapeType" className="block text-sm font-medium text-gray-700 mb-1">
+          部屋の形状
         </label>
-        <input
-          type="text"
-          id="verticesInput"
-          name="verticesInput"
-          value={formData.verticesInput}
+        <select
+          id="shapeType"
+          name="shapeType"
+          value={formData.shapeType}
           onChange={handleInputChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="0,0 5,0 5,3 0,3"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          x,y形式でスペース区切り。単位：メートル
-        </p>
+        >
+          <option value="rectangle">四角形</option>
+          <option value="lShape">L字型</option>
+          <option value="uShape">コの字型</option>
+        </select>
       </div>
+
+      {renderShapeParams()}
 
       <div>
         <label htmlFor="height" className="block text-sm font-medium text-gray-700 mb-1">
-          天井高（m）
+          天井高 (cm)
         </label>
         <input
           type="number"
@@ -122,8 +310,8 @@ export default function RoomForm() {
           name="height"
           value={formData.height}
           onChange={handleInputChange}
-          step="0.1"
-          min="0.1"
+          step="10"
+          min="10"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -163,21 +351,12 @@ export default function RoomForm() {
         </div>
       )}
 
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          部屋を追加
-        </button>
-        <button
-          type="button"
-          onClick={handleExample}
-          className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-        >
-          サンプル
-        </button>
-      </div>
+      <button
+        type="submit"
+        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+      >
+        部屋を追加
+      </button>
     </form>
   );
 }
