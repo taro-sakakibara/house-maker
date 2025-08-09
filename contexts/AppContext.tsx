@@ -20,7 +20,6 @@ interface AppContextType {
   setActiveFurnitureId: (furnitureId: string | null) => void;
   getFurnitureInRoom: (roomId: string | null) => Furniture[];
   saveProject: () => Promise<void>;
-  loadProject: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -117,33 +116,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loadProject = async () => {
-    const projectData = await loadProjectFromLocal();
-    if (projectData) {
-      setRooms(projectData.rooms);
-      
-      // 古い座標系の家具データを新しい座標系に変換
-      const convertedFurniture = projectData.furniture.map(item => {
-        // Z座標が負の値の場合、古い座標系なので変換
-        if (item.position.z < 0) {
-          return {
-            ...item,
-            position: {
-              ...item.position,
-              z: -item.position.z, // 負の値を正の値に変換
-            }
-          };
-        }
-        return item;
-      });
-      
-      setFurniture(convertedFurniture);
-      // 部屋があれば最初の部屋を自動選択
-      setActiveRoomId(projectData.rooms.length > 0 ? projectData.rooms[0].id : null);
-      setActiveFurnitureId(null);
-      alert('プロジェクトを読み込みました。');
-    }
-  };
 
   return (
     <AppContext.Provider
@@ -162,7 +134,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setActiveFurnitureId,
         getFurnitureInRoom,
         saveProject,
-        loadProject,
       }}
     >
       {children}

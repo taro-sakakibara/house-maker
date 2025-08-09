@@ -8,7 +8,7 @@ import FurnitureForm from '@/components/FurnitureForm';
 import FurnitureList from '@/components/FurnitureList';
 
 export default function Sidebar() {
-  const { rooms, getFurnitureInRoom, activeRoomId } = useApp();
+  const { rooms, furniture, getFurnitureInRoom, activeRoomId, saveProject } = useApp();
   const [showRoomForm, setShowRoomForm] = useState(false);
   const [showFurnitureForm, setShowFurnitureForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState<any>(null);
@@ -119,7 +119,12 @@ export default function Sidebar() {
         <div>
           <h2 className="text-lg font-semibold mb-3">ファイル操作</h2>
           <div className="bg-white p-4 rounded-lg shadow">
-            <p className="text-gray-600 text-sm">保存・読み込み機能がここに入ります</p>
+            <button
+              onClick={saveProject}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+            >
+              プロジェクトを保存
+            </button>
           </div>
         </div>
       </div>
