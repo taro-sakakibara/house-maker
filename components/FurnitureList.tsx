@@ -3,7 +3,11 @@
 import React from 'react';
 import { useApp } from '@/contexts/AppContext';
 
-export default function FurnitureList() {
+interface FurnitureListProps {
+  onEditFurniture?: (furniture: any) => void;
+}
+
+export default function FurnitureList({ onEditFurniture }: FurnitureListProps) {
   const { furniture, activeFurnitureId, setActiveFurnitureId, deleteFurniture, activeRoomId } = useApp();
   
   const roomFurniture = furniture.filter(item => item.roomId === activeRoomId);
@@ -44,15 +48,26 @@ export default function FurnitureList() {
               />
               <h3 className="font-medium">{item.name}</h3>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteFurniture(item.id);
-              }}
-              className="text-red-500 hover:text-red-700 text-sm"
-            >
-              削除
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditFurniture?.(item);
+                }}
+                className="text-blue-500 hover:text-blue-700 text-sm"
+              >
+                編集
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteFurniture(item.id);
+                }}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                削除
+              </button>
+            </div>
           </div>
           <div className="text-xs text-gray-600 mt-1">
             {item.size.width}cm × {item.size.height}cm × {item.size.depth}cm

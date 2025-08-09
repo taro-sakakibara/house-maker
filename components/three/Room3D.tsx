@@ -14,20 +14,29 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
   const wallMaterials = useRef<THREE.MeshBasicMaterial[]>([]);
   // 頂点から床面のジオメトリを作成
   const createFloorGeometry = () => {
-    const shape = new THREE.Shape();
+    // 三角形分割で床面を作成
+    const vertices = [];
+    const indices = [];
     
-    // 最初の頂点に移動 (Y座標を-Zにマップ)
-    shape.moveTo(room.vertices[0].x, -room.vertices[0].y);
-    
-    // 残りの頂点に線を描く
-    for (let i = 1; i < room.vertices.length; i++) {
-      shape.lineTo(room.vertices[i].x, -room.vertices[i].y);
+    // 4つの頂点を3D空間の座標に変換（Y=0の床面）
+    for (const vertex of room.vertices) {
+      vertices.push(vertex.x, 0, vertex.y); // X, Y=0, Z
     }
     
-    // 形状を閉じる
-    shape.closePath();
+    // 四角形を2つの三角形に分割
+    if (room.vertices.length === 4) {
+      // 最初の三角形: 0-1-2
+      indices.push(0, 1, 2);
+      // 2番目の三角形: 0-2-3
+      indices.push(0, 2, 3);
+    }
     
-    return new THREE.ShapeGeometry(shape);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    
+    return geometry;
   };
 
   // 壁面のジオメトリを作成
@@ -74,13 +83,13 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
       const wallDirection = new THREE.Vector3(
         nextVertex.x - vertex.x,
         0,
-        -(nextVertex.y - vertex.y)
+        nextVertex.y - vertex.y
       ).normalize();
       
       const wallNormal = new THREE.Vector3(
-        -wallDirection.z,
+        wallDirection.z,
         0,
-        wallDirection.x
+        -wallDirection.x
       );
       
       // カメラから壁への角度を計算
@@ -102,8 +111,8 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
-      {/* 床面 - Y=0の平面に配置 */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+      {/* 床面 - 直接3D座標で配置 */}
+      <mesh position={[0, 0, 0]}>
         <primitive object={floorGeometry} />
         <meshBasicMaterial 
           color={room.floorColor || '#e0e0e0'} 
@@ -115,13 +124,13 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
       {room.vertices.map((vertex, index) => {
         const nextVertex = room.vertices[(index + 1) % room.vertices.length];
         
-        // 壁の中心位置を計算 (Three.jsの座標系に合わせる)
+        // 壁の中心位置を計算 (床面の座標系に合わせる)
         const centerX = (vertex.x + nextVertex.x) / 2;
-        const centerZ = -(vertex.y + nextVertex.y) / 2; // Y座標をZ座標にマップ（反転）
+        const centerZ = (vertex.y + nextVertex.y) / 2;
         const centerY = room.height / 2; // 壁の高さの中心
         
-        // 壁の角度を計算
-        const angle = Math.atan2(-(nextVertex.y - vertex.y), nextVertex.x - vertex.x);
+        // 壁の角度を計算 (Z軸方向の変化を考慮)
+        const angle = Math.atan2(nextVertex.y - vertex.y, nextVertex.x - vertex.x);
         
         // マテリアルをrefに保存
         if (!wallMaterials.current[index]) {

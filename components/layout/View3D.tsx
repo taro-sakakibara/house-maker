@@ -31,6 +31,23 @@ function Scene() {
       // 家具が選択されている場合は視点移動を無効にする
       if (activeFurnitureId) return;
 
+      // input、textareaなどのフォーカスがある場合は無効にする
+      const activeElement = document.activeElement;
+      if (activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT' ||
+        activeElement.tagName === 'BUTTON' ||
+        activeElement.contentEditable === 'true'
+      )) {
+        return;
+      }
+
+      // サイドバー内でのキーボード操作の場合は無効にする
+      if (activeElement && activeElement.closest('aside')) {
+        return;
+      }
+
       const controls = controlsRef.current;
       if (!controls) return;
 

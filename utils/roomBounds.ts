@@ -32,8 +32,8 @@ export function calculateRoomBounds(room: Room): RoomBounds {
   return {
     minX,
     maxX,
-    minZ: -maxY,
-    maxZ: -minY,
+    minZ: minY,
+    maxZ: maxY,
   };
 }
 
@@ -43,7 +43,7 @@ export function calculateRoomBounds(room: Room): RoomBounds {
 export function isPointInPolygon(point: { x: number; z: number }, vertices: Point2D[]): boolean {
   let inside = false;
   const x = point.x;
-  const y = -point.z; // Z座標をY座標に変換
+  const y = point.z; // Z座標をY座標に変換
 
   for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
     const xi = vertices[i].x;
@@ -89,7 +89,7 @@ export function constrainFurnitureToRoom(
   if (!allCornersInside) {
     // 部屋の中心座標を計算
     const centerX = room.vertices.reduce((sum, v) => sum + v.x, 0) / room.vertices.length;
-    const centerZ = room.vertices.reduce((sum, v) => sum + (-v.y), 0) / room.vertices.length;
+    const centerZ = room.vertices.reduce((sum, v) => sum + v.y, 0) / room.vertices.length;
     
     // 中心に向かって少し移動
     const towardsCenterX = centerX > constrainedX ? constrainedX + 0.1 : constrainedX - 0.1;

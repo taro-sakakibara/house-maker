@@ -13,10 +13,30 @@ const initialFormData: FurnitureFormData = {
   color: '#8B4513', // 茶色
 };
 
-export default function FurnitureForm() {
-  const { addFurniture, activeRoomId, rooms } = useApp();
+interface FurnitureFormProps {
+  editingFurniture?: Furniture;
+  onEditComplete?: () => void;
+}
+
+export default function FurnitureForm({ editingFurniture, onEditComplete }: FurnitureFormProps) {
+  const { addFurniture, updateFurniture, activeRoomId, rooms } = useApp();
   const [formData, setFormData] = useState<FurnitureFormData>(initialFormData);
   const [error, setError] = useState<string>('');
+
+  // 編集モードの初期化
+  React.useEffect(() => {
+    if (editingFurniture) {
+      setFormData({
+        name: editingFurniture.name,
+        width: editingFurniture.size.width.toString(),
+        height: editingFurniture.size.height.toString(), 
+        depth: editingFurniture.size.depth.toString(),
+        color: editingFurniture.color,
+      });
+    } else {
+      setFormData(initialFormData);
+    }
+  }, [editingFurniture]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,7 +53,7 @@ export default function FurnitureForm() {
       return;
     }
 
-    if (!activeRoomId) {
+    if (!activeRoomId && !editingFurniture) {
       setError('先に部屋を選択してください');
       return;
     }
@@ -57,40 +77,58 @@ export default function FurnitureForm() {
       return;
     }
 
-    // アクティブな部屋を取得
-    const activeRoom = rooms.find(room => room.id === activeRoomId);
-    
-    // 部屋の中心座標を計算
-    let centerPosition = getDefaultPosition();
-    if (activeRoom && activeRoom.vertices.length > 0) {
-      const avgX = activeRoom.vertices.reduce((sum, v) => sum + v.x, 0) / activeRoom.vertices.length;
-      const avgZ = activeRoom.vertices.reduce((sum, v) => sum + (-v.y), 0) / activeRoom.vertices.length;
-      centerPosition = {
-        x: avgX,
-        y: cmToM(height) / 2, // 床から家具の高さの半分だけ上に配置
-        z: avgZ,
+    if (editingFurniture) {
+      // 編集モード
+      const updatedFurniture: Partial<Furniture> = {
+        name: formData.name.trim(),
+        size: {
+          width,
+          height,
+          depth,
+        },
+        color: formData.color,
       };
+      updateFurniture(editingFurniture.id, updatedFurniture);
+      onEditComplete?.();
+    } else {
+      // 新規追加モード
+      // アクティブな部屋を取得
+      const activeRoom = rooms.find(room => room.id === activeRoomId);
+      
+      // 部屋の中心座標を計算
+      let centerPosition = getDefaultPosition();
+      if (activeRoom && activeRoom.vertices.length > 0) {
+        const avgX = activeRoom.vertices.reduce((sum, v) => sum + v.x, 0) / activeRoom.vertices.length;
+        const avgZ = activeRoom.vertices.reduce((sum, v) => sum + v.y, 0) / activeRoom.vertices.length;
+        centerPosition = {
+          x: avgX,
+          y: cmToM(height) / 2, // 床から家具の高さの半分だけ上に配置
+          z: avgZ,
+        };
+      }
+
+      // 家具を作成
+      const newFurniture: Furniture = {
+        id: generateFurnitureId(),
+        name: formData.name.trim(),
+        position: centerPosition,
+        size: {
+          width,
+          height,
+          depth,
+        },
+        rotation: getDefaultRotation(),
+        color: formData.color,
+        roomId: activeRoomId,
+      };
+
+      addFurniture(newFurniture);
     }
-
-    // 家具を作成
-    const newFurniture: Furniture = {
-      id: generateFurnitureId(),
-      name: formData.name.trim(),
-      position: centerPosition,
-      size: {
-        width,
-        height,
-        depth,
-      },
-      rotation: getDefaultRotation(),
-      color: formData.color,
-      roomId: activeRoomId,
-    };
-
-    addFurniture(newFurniture);
     
     // フォームをリセット
-    setFormData(initialFormData);
+    if (!editingFurniture) {
+      setFormData(initialFormData);
+    }
     setError('');
   };
 
@@ -176,7 +214,7 @@ export default function FurnitureForm() {
         />
       </div>
 
-      {!activeRoomId && (
+      {!activeRoomId && !editingFurniture && (
         <div className="text-amber-600 text-sm bg-amber-50 p-2 rounded">
           家具を追加するには、まず部屋を選択してください
         </div>
@@ -190,14 +228,14 @@ export default function FurnitureForm() {
 
       <button
         type="submit"
-        disabled={!activeRoomId}
+        disabled={!activeRoomId && !editingFurniture}
         className={`w-full py-2 px-4 rounded-md transition-colors ${
-          activeRoomId
+          activeRoomId || editingFurniture
             ? 'bg-green-500 text-white hover:bg-green-600'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
         }`}
       >
-        家具を追加
+        {editingFurniture ? '家具を更新' : '家具を追加'}
       </button>
     </form>
   );

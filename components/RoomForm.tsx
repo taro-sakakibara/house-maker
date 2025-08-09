@@ -31,10 +31,61 @@ const initialFormData: RoomFormData = {
   wallColor: '#ffffff',
 };
 
-export default function RoomForm() {
-  const { addRoom, rooms } = useApp();
+interface RoomFormProps {
+  editingRoom?: Room;
+  onEditComplete?: () => void;
+}
+
+export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps) {
+  const { addRoom, updateRoom, rooms } = useApp();
   const [formData, setFormData] = useState<RoomFormData>(initialFormData);
   const [error, setError] = useState<string>('');
+
+  // 編集モードの初期化
+  React.useEffect(() => {
+    if (editingRoom) {
+      // 既存の部屋データからフォームデータを復元
+      const vertices = editingRoom.vertices;
+      let width = 0, depth = 0;
+      
+      if (vertices.length >= 4) {
+        // 幅の計算
+        width = Math.abs(vertices[1].x - vertices[0].x) * 100; // mからcmに変換
+        
+        // 奥行きの計算 - より堅牢な方法
+        if (vertices[2].y != null && vertices[1].y != null) {
+          depth = Math.abs(vertices[2].y - vertices[1].y) * 100;
+        } else if (vertices[3].y != null && vertices[0].y != null) {
+          depth = Math.abs(vertices[3].y - vertices[0].y) * 100;
+        } else {
+          // 全ての頂点のy座標をチェック
+          const validY = vertices.map(v => v.y).filter(y => y != null);
+          if (validY.length >= 2) {
+            depth = Math.abs(Math.max(...validY) - Math.min(...validY)) * 100;
+          } else {
+            depth = 300; // デフォルト値
+          }
+        }
+      }
+
+      setFormData({
+        name: editingRoom.name,
+        shapeType: 'rectangle', // 簡易実装のため、とりあえずrectangleに固定
+        shapeParams: {
+          ...defaultShapeParams,
+          rectangle: {
+            width: width || 300, // デフォルト値
+            depth: depth || 200, // デフォルト値
+          }
+        },
+        height: (editingRoom.height * 100).toString(), // mからcmに変換
+        floorColor: editingRoom.floorColor,
+        wallColor: editingRoom.wallColor,
+      });
+    } else {
+      setFormData(initialFormData);
+    }
+  }, [editingRoom]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -73,6 +124,12 @@ export default function RoomForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // 新規追加の場合のみ部屋数制限をチェック
+    if (!editingRoom && rooms.length >= 1) {
+      setError('部屋は1つまでしか追加できません');
+      return;
+    }
+    
     if (!formData.name.trim()) {
       setError('部屋名を入力してください');
       return;
@@ -86,19 +143,34 @@ export default function RoomForm() {
 
     const vertices = generateVertices();
     
-    const newRoom: Room = {
-      id: generateId(),
-      name: formData.name.trim(),
-      vertices,
-      height: height / 100, // cmをmに変換
-      floorColor: formData.floorColor,
-      wallColor: formData.wallColor,
-    };
-
-    addRoom(newRoom);
+    if (editingRoom) {
+      // 編集モード
+      const updatedRoom: Partial<Room> = {
+        name: formData.name.trim(),
+        vertices,
+        height: height / 100, // cmをmに変換
+        floorColor: formData.floorColor,
+        wallColor: formData.wallColor,
+      };
+      updateRoom(editingRoom.id, updatedRoom);
+      onEditComplete?.();
+    } else {
+      // 新規追加モード
+      const newRoom: Room = {
+        id: generateId(),
+        name: formData.name.trim(),
+        vertices,
+        height: height / 100, // cmをmに変換
+        floorColor: formData.floorColor,
+        wallColor: formData.wallColor,
+      };
+      addRoom(newRoom);
+    }
     
     // フォームをリセット
-    setFormData(initialFormData);
+    if (!editingRoom) {
+      setFormData(initialFormData);
+    }
     setError('');
   };
 
@@ -355,7 +427,7 @@ export default function RoomForm() {
         type="submit"
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
       >
-        部屋を追加
+        {editingRoom ? '部屋を更新' : '部屋を追加'}
       </button>
     </form>
   );

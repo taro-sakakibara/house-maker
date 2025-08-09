@@ -49,6 +49,23 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isActive) return;
 
+      // input、textareaなどのフォーカスがある場合は無効にする
+      const activeElement = document.activeElement;
+      if (activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.tagName === 'SELECT' ||
+        activeElement.tagName === 'BUTTON' ||
+        activeElement.contentEditable === 'true'
+      )) {
+        return;
+      }
+
+      // サイドバー内でのキーボード操作の場合は無効にする
+      if (activeElement && activeElement.closest('aside')) {
+        return;
+      }
+
       const step = 0.1; // 移動ステップ（メートル）
       const rotationStep = Math.PI / 8; // 回転ステップ（22.5度）
       const sizeStep = 5; // サイズステップ（cm）
