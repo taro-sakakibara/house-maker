@@ -16,8 +16,11 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
   const { updateFurniture, setActiveFurnitureId, rooms } = useApp();
   const { gl, camera, scene } = useThree();
   const [isDragging, setIsDragging] = useState(false);
+  const [isVerticalDragging, setIsVerticalDragging] = useState(false);
   const [dragPlane] = useState(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0));
   const [raycaster] = useState(new THREE.Raycaster());
+  const [initialMouseY, setInitialMouseY] = useState(0);
+  const [initialFurnitureY, setInitialFurnitureY] = useState(0);
 
   // 家具のサイズをメートルに変換
   const width = cmToM(furniture.size.width);
@@ -39,7 +42,6 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     }
   };
 
-  // ドラッグ処理をグローバルイベントリスナーで処理するように変更
   // キーボードイベントのハンドリング
   React.useEffect(() => {
     if (!isActive) return;
@@ -90,6 +92,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
         case 'Enter':
           e.preventDefault();
           setIsDragging(false);
+          setIsVerticalDragging(false);
           
           // OrbitControlsを再有効化
           const controls = scene.userData.orbitControls;
@@ -101,77 +104,101 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
           break;
 
         // 微調整移動（ユーザー視点基準でグリッド軸に沿った移動）
-        case 'ArrowUp': // ユーザーから見て前方向（最も近いグリッド軸に沿って）
+        case 'ArrowUp':
           e.preventDefault();
-          const camera1 = camera;
-          const cameraDirection1 = new THREE.Vector3();
-          camera1.getWorldDirection(cameraDirection1);
           
-          const cameraRight1 = new THREE.Vector3();
-          cameraRight1.crossVectors(cameraDirection1, camera1.up).normalize();
-          
-          const cameraForward1 = new THREE.Vector3();
-          cameraForward1.crossVectors(new THREE.Vector3(0, 1, 0), cameraRight1).normalize();
-          
-          // X軸とZ軸のどちらにより近いかを判定
-          const absX1 = Math.abs(cameraForward1.x);
-          const absZ1 = Math.abs(cameraForward1.z);
-          
-          const room1 = rooms.find(r => r.id === furniture.roomId);
-          let newPos1;
-          if (absX1 > absZ1) {
-            // X軸方向に移動
-            newPos1 = { 
-              x: furniture.position.x + (cameraForward1.x > 0 ? step : -step), 
-              z: furniture.position.z 
-            };
+          if (e.shiftKey) {
+            // Y軸移動（上に移動）
+            updateFurniture(furniture.id, {
+              position: { 
+                ...furniture.position, 
+                y: Math.min(furniture.position.y + step, 5.0) // 最大高さ5メートルに制限
+              }
+            });
           } else {
-            // Z軸方向に移動
-            newPos1 = { 
-              x: furniture.position.x, 
-              z: furniture.position.z + (cameraForward1.z > 0 ? step : -step) 
-            };
+            // 通常の水平移動（ユーザーから見て前方向）
+            const camera1 = camera;
+            const cameraDirection1 = new THREE.Vector3();
+            camera1.getWorldDirection(cameraDirection1);
+            
+            const cameraRight1 = new THREE.Vector3();
+            cameraRight1.crossVectors(cameraDirection1, camera1.up).normalize();
+            
+            const cameraForward1 = new THREE.Vector3();
+            cameraForward1.crossVectors(new THREE.Vector3(0, 1, 0), cameraRight1).normalize();
+            
+            // X軸とZ軸のどちらにより近いかを判定
+            const absX1 = Math.abs(cameraForward1.x);
+            const absZ1 = Math.abs(cameraForward1.z);
+            
+            const room1 = rooms.find(r => r.id === furniture.roomId);
+            let newPos1;
+            if (absX1 > absZ1) {
+              // X軸方向に移動
+              newPos1 = { 
+                x: furniture.position.x + (cameraForward1.x > 0 ? step : -step), 
+                z: furniture.position.z 
+              };
+            } else {
+              // Z軸方向に移動
+              newPos1 = { 
+                x: furniture.position.x, 
+                z: furniture.position.z + (cameraForward1.z > 0 ? step : -step) 
+              };
+            }
+            const constrainedPos1 = room1 ? constrainFurnitureToRoom(newPos1, { width, depth }, room1) : newPos1;
+            updateFurniture(furniture.id, {
+              position: { ...furniture.position, x: constrainedPos1.x, z: constrainedPos1.z }
+            });
           }
-          const constrainedPos1 = room1 ? constrainFurnitureToRoom(newPos1, { width, depth }, room1) : newPos1;
-          updateFurniture(furniture.id, {
-            position: { ...furniture.position, x: constrainedPos1.x, z: constrainedPos1.z }
-          });
           break;
 
-        case 'ArrowDown': // ユーザーから見て後方向（最も近いグリッド軸に沿って）
+        case 'ArrowDown':
           e.preventDefault();
-          const camera2 = camera;
-          const cameraDirection2 = new THREE.Vector3();
-          camera2.getWorldDirection(cameraDirection2);
           
-          const cameraRight2 = new THREE.Vector3();
-          cameraRight2.crossVectors(cameraDirection2, camera2.up).normalize();
-          
-          const cameraForward2 = new THREE.Vector3();
-          cameraForward2.crossVectors(new THREE.Vector3(0, 1, 0), cameraRight2).normalize();
-          
-          const absX2 = Math.abs(cameraForward2.x);
-          const absZ2 = Math.abs(cameraForward2.z);
-          
-          const room2 = rooms.find(r => r.id === furniture.roomId);
-          let newPos2;
-          if (absX2 > absZ2) {
-            // X軸方向に移動
-            newPos2 = { 
-              x: furniture.position.x + (cameraForward2.x > 0 ? -step : step), 
-              z: furniture.position.z 
-            };
+          if (e.shiftKey) {
+            // Y軸移動（下に移動）
+            updateFurniture(furniture.id, {
+              position: { 
+                ...furniture.position, 
+                y: Math.max(furniture.position.y - step, height / 2) // 床に埋まらないように制限
+              }
+            });
           } else {
-            // Z軸方向に移動
-            newPos2 = { 
-              x: furniture.position.x, 
-              z: furniture.position.z + (cameraForward2.z > 0 ? -step : step) 
-            };
+            // 通常の水平移動（ユーザーから見て後方向）
+            const camera2 = camera;
+            const cameraDirection2 = new THREE.Vector3();
+            camera2.getWorldDirection(cameraDirection2);
+            
+            const cameraRight2 = new THREE.Vector3();
+            cameraRight2.crossVectors(cameraDirection2, camera2.up).normalize();
+            
+            const cameraForward2 = new THREE.Vector3();
+            cameraForward2.crossVectors(new THREE.Vector3(0, 1, 0), cameraRight2).normalize();
+            
+            const absX2 = Math.abs(cameraForward2.x);
+            const absZ2 = Math.abs(cameraForward2.z);
+            
+            const room2 = rooms.find(r => r.id === furniture.roomId);
+            let newPos2;
+            if (absX2 > absZ2) {
+              // X軸方向に移動
+              newPos2 = { 
+                x: furniture.position.x + (cameraForward2.x > 0 ? -step : step), 
+                z: furniture.position.z 
+              };
+            } else {
+              // Z軸方向に移動
+              newPos2 = { 
+                x: furniture.position.x, 
+                z: furniture.position.z + (cameraForward2.z > 0 ? -step : step) 
+              };
+            }
+            const constrainedPos2 = room2 ? constrainFurnitureToRoom(newPos2, { width, depth }, room2) : newPos2;
+            updateFurniture(furniture.id, {
+              position: { ...furniture.position, x: constrainedPos2.x, z: constrainedPos2.z }
+            });
           }
-          const constrainedPos2 = room2 ? constrainFurnitureToRoom(newPos2, { width, depth }, room2) : newPos2;
-          updateFurniture(furniture.id, {
-            position: { ...furniture.position, x: constrainedPos2.x, z: constrainedPos2.z }
-          });
           break;
 
         case 'ArrowLeft': // ユーザーから見て左方向（最も近いグリッド軸に沿って）
@@ -252,47 +279,78 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     const handleGlobalPointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
       
-      const canvas = gl.domElement;
-      const rect = canvas.getBoundingClientRect();
-      const mouse = new THREE.Vector2();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      
-      // レイキャストで床平面との交点を求める
-      raycaster.setFromCamera(mouse, camera);
-      const intersection = new THREE.Vector3();
-      raycaster.ray.intersectPlane(dragPlane, intersection);
-      
-      if (intersection) {
-        // 家具が属する部屋を取得
-        const room = rooms.find(r => r.id === furniture.roomId);
-        
-        let newPosition = {
-          x: intersection.x,
-          z: intersection.z,
-        };
-
-        // 部屋内に制限
-        if (room) {
-          newPosition = constrainFurnitureToRoom(
-            newPosition,
-            { width, depth },
-            room
-          );
+      // Shiftキーが押されている場合は垂直移動
+      if (e.shiftKey) {
+        // 垂直ドラッグ処理
+        if (!isVerticalDragging) {
+          // 初回のShift+ドラッグ時に初期値を設定
+          setIsVerticalDragging(true);
+          setInitialMouseY(e.clientY);
+          setInitialFurnitureY(furniture.position.y);
+          return;
         }
+        
+        // マウスのY座標変化から高さを計算
+        const deltaY = initialMouseY - e.clientY; // 上に動かすと正の値
+        const heightChange = deltaY * 0.01; // スケーリング調整
+        const newY = Math.max(
+          height / 2, // 床に埋まらない
+          Math.min(5.0, initialFurnitureY + heightChange) // 最大高さ5メートル
+        );
 
         updateFurniture(furniture.id, {
           position: {
-            x: newPosition.x,
-            y: furniture.position.y,
-            z: newPosition.z,
+            ...furniture.position,
+            y: newY,
           }
         });
+      } else {
+        // 通常の水平ドラッグ処理
+        setIsVerticalDragging(false);
+        
+        const canvas = gl.domElement;
+        const rect = canvas.getBoundingClientRect();
+        const mouse = new THREE.Vector2();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        
+        // レイキャストで床平面との交点を求める
+        raycaster.setFromCamera(mouse, camera);
+        const intersection = new THREE.Vector3();
+        raycaster.ray.intersectPlane(dragPlane, intersection);
+        
+        if (intersection) {
+          // 家具が属する部屋を取得
+          const room = rooms.find(r => r.id === furniture.roomId);
+          
+          let newPosition = {
+            x: intersection.x,
+            z: intersection.z,
+          };
+
+          // 部屋内に制限
+          if (room) {
+            newPosition = constrainFurnitureToRoom(
+              newPosition,
+              { width, depth },
+              room
+            );
+          }
+
+          updateFurniture(furniture.id, {
+            position: {
+              x: newPosition.x,
+              y: furniture.position.y,
+              z: newPosition.z,
+            }
+          });
+        }
       }
     };
 
     const handleGlobalPointerUp = () => {
       setIsDragging(false);
+      setIsVerticalDragging(false);
       
       // OrbitControlsを再有効化
       const controls = scene.userData.orbitControls;
@@ -310,13 +368,13 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
       document.removeEventListener('pointermove', handleGlobalPointerMove);
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls]);
+  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height]);
 
   const handleDoubleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     setActiveFurnitureId(furniture.id);
     
-    // ダブルクリック直後にドラッグを開始する準備
+    // 通常のダブルクリック：水平ドラッグを開始
     setIsDragging(true);
     
     // OrbitControlsを無効化

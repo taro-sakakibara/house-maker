@@ -203,7 +203,8 @@ export default function View3D() {
             <p className="text-gray-600">ズーム: ホイール</p>
             <hr className="border-gray-300" />
             <p className="text-gray-600">家具選択: 家具をダブルクリック</p>
-            <p className="text-gray-600">家具移動: 家具をドラッグ / 矢印キー</p>
+            <p className="text-gray-600">水平移動: 家具をドラッグ / 矢印キー</p>
+            <p className="text-gray-600">垂直移動: Shift+ドラッグ / Shift+矢印キー</p>
             <p className="text-gray-600">家具回転: R キー</p>
             <p className="text-gray-600">サイズ変更: + / - キー</p>
             <p className="text-gray-600">選択解除: Enter キー</p>
