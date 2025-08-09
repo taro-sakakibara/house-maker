@@ -401,14 +401,12 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     >
       <mesh
         ref={meshRef}
-        castShadow
-        receiveShadow
         onPointerDown={handlePointerDown}
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
       >
         <boxGeometry args={[width, height, depth]} />
-        <meshStandardMaterial 
+        <meshBasicMaterial 
           color={furniture.color}
           opacity={isDragging ? 0.7 : 1}
           transparent={isDragging}
@@ -423,21 +421,6 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
         </lineSegments>
       )}
 
-      {/* ドラッグ中の影表示 */}
-      {isDragging && (
-        <mesh
-          position={[0, -height / 2 - 0.001, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[width * 1.1, depth * 1.1]} />
-          <meshBasicMaterial 
-            color="#000000" 
-            opacity={0.2} 
-            transparent 
-            depthWrite={false}
-          />
-        </mesh>
-      )}
     </group>
   );
 }

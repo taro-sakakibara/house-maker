@@ -99,12 +99,10 @@ function Scene() {
       <PerspectiveCamera makeDefault position={[10, 10, 10]} fov={60} />
 
       {/* ライト設定 */}
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.8} />
       <directionalLight
         position={[10, 10, 5]}
-        intensity={1}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
+        intensity={0.5}
       />
 
       {/* コントロール */}
@@ -148,11 +146,10 @@ function Scene() {
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.01, 0]}
-        receiveShadow
         onClick={handleBackgroundClick}
       >
         <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#f0f0f0" />
+        <meshBasicMaterial color="#f0f0f0" />
       </mesh>
 
       {/* 部屋の3D表示 */}
@@ -187,7 +184,7 @@ function Scene() {
 export default function View3D() {
   return (
     <div className="flex-1 bg-gray-50 relative h-full">
-      <Canvas shadows className="absolute inset-0">
+      <Canvas className="absolute inset-0">
         <Suspense fallback={null}>
           <Scene />
         </Suspense>

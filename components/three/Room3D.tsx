@@ -11,7 +11,7 @@ interface Room3DProps {
 export default function Room3D({ room, isActive = false }: Room3DProps) {
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
-  const wallMaterials = useRef<THREE.MeshStandardMaterial[]>([]);
+  const wallMaterials = useRef<THREE.MeshBasicMaterial[]>([]);
   // 頂点から床面のジオメトリを作成
   const createFloorGeometry = () => {
     const shape = new THREE.Shape();
@@ -105,7 +105,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
       {/* 床面 - Y=0の平面に配置 */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <primitive object={floorGeometry} />
-        <meshStandardMaterial 
+        <meshBasicMaterial 
           color={room.floorColor || '#e0e0e0'} 
           side={THREE.DoubleSide}
         />
@@ -125,7 +125,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
         
         // マテリアルをrefに保存
         if (!wallMaterials.current[index]) {
-          wallMaterials.current[index] = new THREE.MeshStandardMaterial({
+          wallMaterials.current[index] = new THREE.MeshBasicMaterial({
             color: room.wallColor || '#ffffff',
             side: THREE.DoubleSide,
           });
