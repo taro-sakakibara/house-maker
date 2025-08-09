@@ -59,8 +59,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // 環境別保存ヘルパー関数
   const saveProjectsData = async (data: ProjectsData): Promise<boolean> => {
     if (isDevelopment()) {
-      // 開発環境：ローカルファイルに保存
-      return await saveProjectsToLocal(data);
+      // 開発環境：LocalStorageに保存
+      try {
+        localStorage.setItem('house-maker-projects', JSON.stringify(data));
+        console.log('Development mode: Saved to localStorage');
+        return true;
+      } catch (error) {
+        console.error('Failed to save to localStorage:', error);
+        return false;
+      }
     } else {
       // 本番環境：Gistに保存
       const success = await gistStorage.saveData(data);
@@ -87,9 +94,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       
       // 環境別のデータ読み込み
       if (isDevelopment()) {
-        // 開発環境：ローカルファイルから読み込み
-        console.log('Development mode: Loading from local file');
-        newProjectsData = await loadProjectsFromLocal();
+        // 開発環境：まずLocalStorageから読み込みを試行
+        console.log('Development mode: Loading from localStorage');
+        try {
+          const storedData = localStorage.getItem('house-maker-projects');
+          if (storedData) {
+            newProjectsData = JSON.parse(storedData);
+            console.log('Loaded from localStorage');
+          }
+        } catch (error) {
+          console.warn('Failed to load from localStorage:', error);
+        }
+        
+        // LocalStorageにデータがない場合はpublicファイルから読み込み
+        if (!newProjectsData) {
+          console.log('No localStorage data, loading from public file');
+          newProjectsData = await loadFromLocalFile();
+        }
       } else {
         // 本番環境：まずGistから読み込みを試行
         console.log('Production mode: Loading from Gist');
