@@ -86,9 +86,9 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
       // カメラから壁への角度を計算
       const angle = toCameraVector.dot(wallNormal);
       
-      // カメラが壁の外側にある場合、透明度を下げる
+      // カメラが壁の外側にある場合、完全透明にする
       if (angle > 0.2) {
-        material.opacity = Math.max(0.1, 1 - angle);
+        material.opacity = 0;
         material.transparent = true;
       } else {
         material.opacity = 1;
