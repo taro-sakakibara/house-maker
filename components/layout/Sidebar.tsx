@@ -6,9 +6,10 @@ import RoomForm from '@/components/RoomForm';
 import RoomList from '@/components/RoomList';
 import FurnitureForm from '@/components/FurnitureForm';
 import FurnitureList from '@/components/FurnitureList';
+import ProjectManager from '@/components/ProjectManager';
 
 export default function Sidebar() {
-  const { rooms, furniture, getFurnitureInRoom, activeRoomId, saveProject } = useApp();
+  const { rooms, furniture, getFurnitureInRoom, activeRoomId, saveCurrentProject } = useApp();
   const [showRoomForm, setShowRoomForm] = useState(false);
   const [showFurnitureForm, setShowFurnitureForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState<any>(null);
@@ -116,14 +117,21 @@ export default function Sidebar() {
           </div>
         </div>
         
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-3">プロジェクト管理</h2>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <ProjectManager />
+          </div>
+        </div>
+        
         <div>
           <h2 className="text-lg font-semibold mb-3">ファイル操作</h2>
           <div className="bg-white p-4 rounded-lg shadow">
             <button
-              onClick={saveProject}
+              onClick={saveCurrentProject}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
             >
-              プロジェクトを保存
+              現在のプロジェクトを保存
             </button>
           </div>
         </div>
