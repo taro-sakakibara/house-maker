@@ -14,7 +14,7 @@ const initialFormData: FurnitureFormData = {
 };
 
 export default function FurnitureForm() {
-  const { addFurniture, activeRoomId } = useApp();
+  const { addFurniture, activeRoomId, rooms } = useApp();
   const [formData, setFormData] = useState<FurnitureFormData>(initialFormData);
   const [error, setError] = useState<string>('');
 
@@ -57,11 +57,26 @@ export default function FurnitureForm() {
       return;
     }
 
+    // アクティブな部屋を取得
+    const activeRoom = rooms.find(room => room.id === activeRoomId);
+    
+    // 部屋の中心座標を計算
+    let centerPosition = getDefaultPosition();
+    if (activeRoom && activeRoom.vertices.length > 0) {
+      const avgX = activeRoom.vertices.reduce((sum, v) => sum + v.x, 0) / activeRoom.vertices.length;
+      const avgZ = activeRoom.vertices.reduce((sum, v) => sum + (-v.y), 0) / activeRoom.vertices.length;
+      centerPosition = {
+        x: avgX,
+        y: cmToM(height) / 2, // 床から家具の高さの半分だけ上に配置
+        z: avgZ,
+      };
+    }
+
     // 家具を作成
     const newFurniture: Furniture = {
       id: generateFurnitureId(),
       name: formData.name.trim(),
-      position: getDefaultPosition(), // 部屋の中央に配置される予定
+      position: centerPosition,
       size: {
         width,
         height,

@@ -5,9 +5,10 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Grid, PerspectiveCamera } from "@react-three/drei";
 import { useApp } from "@/contexts/AppContext";
 import Room3D from "@/components/three/Room3D";
+import Furniture3D from "@/components/three/Furniture3D";
 
 function Scene() {
-  const { rooms, activeRoomId } = useApp();
+  const { rooms, activeRoomId, furniture, activeFurnitureId } = useApp();
 
   return (
     <>
@@ -62,6 +63,15 @@ function Scene() {
           key={room.id} 
           room={room} 
           isActive={room.id === activeRoomId}
+        />
+      ))}
+      
+      {/* 家具の3D表示 */}
+      {furniture.map((item) => (
+        <Furniture3D
+          key={item.id}
+          furniture={item}
+          isActive={item.id === activeFurnitureId}
         />
       ))}
       
