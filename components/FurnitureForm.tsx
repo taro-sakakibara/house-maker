@@ -79,21 +79,6 @@ export default function FurnitureForm() {
     setError('');
   };
 
-  const handlePreset = (preset: { name: string; width: string; height: string; depth: string }) => {
-    setFormData({
-      ...formData,
-      ...preset,
-    });
-  };
-
-  const presets = [
-    { name: 'テーブル', width: '120', height: '75', depth: '80' },
-    { name: '椅子', width: '45', height: '85', depth: '45' },
-    { name: 'ソファ', width: '180', height: '80', depth: '90' },
-    { name: 'ベッド', width: '200', height: '60', depth: '100' },
-    { name: '本棚', width: '80', height: '180', depth: '30' },
-    { name: 'デスク', width: '120', height: '75', depth: '60' },
-  ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,25 +95,6 @@ export default function FurnitureForm() {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="テーブル、椅子など"
         />
-      </div>
-
-      {/* プリセットボタン */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          プリセット
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {presets.map((preset) => (
-            <button
-              key={preset.name}
-              type="button"
-              onClick={() => handlePreset(preset)}
-              className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-            >
-              {preset.name}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
