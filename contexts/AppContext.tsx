@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Room } from '@/types/room';
 import { Furniture } from '@/types/furniture';
+import { saveProjectToLocal, loadProjectFromLocal } from '@/utils/fileUtils';
 
 interface AppContextType {
   rooms: Room[];
@@ -18,6 +19,8 @@ interface AppContextType {
   deleteFurniture: (furnitureId: string) => void;
   setActiveFurnitureId: (furnitureId: string | null) => void;
   getFurnitureInRoom: (roomId: string | null) => Furniture[];
+  saveProject: () => Promise<void>;
+  loadProject: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -27,6 +30,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
   const [furniture, setFurniture] = useState<Furniture[]>([]);
   const [activeFurnitureId, setActiveFurnitureId] = useState<string | null>(null);
+
+  // アプリ起動時にプロジェクトを読み込み
+  useEffect(() => {
+    const loadInitialProject = async () => {
+      const projectData = await loadProjectFromLocal();
+      if (projectData && (projectData.rooms.length > 0 || projectData.furniture.length > 0)) {
+        setRooms(projectData.rooms);
+        setFurniture(projectData.furniture);
+        // 部屋があれば最初の部屋を自動選択
+        if (projectData.rooms.length > 0) {
+          setActiveRoomId(projectData.rooms[0].id);
+        }
+      }
+    };
+
+    loadInitialProject();
+  }, []);
 
   const addRoom = (room: Room) => {
     setRooms((prev) => [...prev, room]);
@@ -74,6 +94,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return furniture.filter((item) => item.roomId === roomId);
   };
 
+  const saveProject = async () => {
+    const success = await saveProjectToLocal(rooms, furniture);
+    if (success) {
+      alert('プロジェクトを保存しました。');
+    }
+  };
+
+  const loadProject = async () => {
+    const projectData = await loadProjectFromLocal();
+    if (projectData) {
+      setRooms(projectData.rooms);
+      setFurniture(projectData.furniture);
+      // 部屋があれば最初の部屋を自動選択
+      setActiveRoomId(projectData.rooms.length > 0 ? projectData.rooms[0].id : null);
+      setActiveFurnitureId(null);
+      alert('プロジェクトを読み込みました。');
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -90,6 +129,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         deleteFurniture,
         setActiveFurnitureId,
         getFurnitureInRoom,
+        saveProject,
+        loadProject,
       }}
     >
       {children}

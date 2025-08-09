@@ -1,0 +1,54 @@
+{
+  "rooms": [
+    {
+      "id": "room-1754748993331-ftpknhs09",
+      "name": "榊原　太郎",
+      "vertices": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 0,
+          "y": 3
+        }
+      ],
+      "height": 2.5,
+      "floorColor": "#e0e0e0",
+      "wallColor": "#ffffff"
+    }
+  ],
+  "furniture": [
+    {
+      "id": "furniture-1754748997435-owms2bsrd",
+      "name": "榊原　太郎",
+      "position": {
+        "x": 2,
+        "y": 0.4,
+        "z": -1.5
+      },
+      "size": {
+        "width": 80,
+        "height": 80,
+        "depth": 40
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "color": "#8B4513",
+      "roomId": "room-1754748993331-ftpknhs09"
+    }
+  ],
+  "createdAt": "2025-08-09T14:16:43.926Z",
+  "version": "1.0.0"
+}
