@@ -1,14 +1,27 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid, PerspectiveCamera } from "@react-three/drei";
 import { useApp } from "@/contexts/AppContext";
 import Room3D from "@/components/three/Room3D";
 import Furniture3D from "@/components/three/Furniture3D";
 
 function Scene() {
-  const { rooms, activeRoomId, furniture, activeFurnitureId } = useApp();
+  const { rooms, activeRoomId, furniture, activeFurnitureId, setActiveFurnitureId } = useApp();
+  const controlsRef = React.useRef();
+  const { scene } = useThree();
+
+  const handleBackgroundClick = () => {
+    setActiveFurnitureId(null);
+  };
+
+  // OrbitControlsをsceneに保存
+  React.useEffect(() => {
+    if (controlsRef.current) {
+      scene.userData.orbitControls = controlsRef.current;
+    }
+  }, [scene]);
 
   return (
     <>
@@ -26,6 +39,7 @@ function Scene() {
 
       {/* コントロール */}
       <OrbitControls
+        ref={controlsRef}
         enablePan={true}
         enableZoom={true}
         enableRotate={true}
@@ -52,6 +66,7 @@ function Scene() {
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.01, 0]}
         receiveShadow
+        onClick={handleBackgroundClick}
       >
         <planeGeometry args={[20, 20]} />
         <meshStandardMaterial color="#f0f0f0" />
