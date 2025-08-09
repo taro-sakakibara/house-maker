@@ -100,44 +100,143 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
           setActiveFurnitureId(null);
           break;
 
-        // 微調整移動
-        case 'ArrowUp':
+        // 微調整移動（ユーザー視点基準でグリッド軸に沿った移動）
+        case 'ArrowUp': // ユーザーから見て前方向（最も近いグリッド軸に沿って）
           e.preventDefault();
+          const camera1 = camera;
+          const cameraDirection1 = new THREE.Vector3();
+          camera1.getWorldDirection(cameraDirection1);
+          
+          const cameraRight1 = new THREE.Vector3();
+          cameraRight1.crossVectors(cameraDirection1, camera1.up).normalize();
+          
+          const cameraForward1 = new THREE.Vector3();
+          cameraForward1.crossVectors(new THREE.Vector3(0, 1, 0), cameraRight1).normalize();
+          
+          // X軸とZ軸のどちらにより近いかを判定
+          const absX1 = Math.abs(cameraForward1.x);
+          const absZ1 = Math.abs(cameraForward1.z);
+          
           const room1 = rooms.find(r => r.id === furniture.roomId);
-          const newPos1 = { x: furniture.position.x, z: furniture.position.z + step };
+          let newPos1;
+          if (absX1 > absZ1) {
+            // X軸方向に移動
+            newPos1 = { 
+              x: furniture.position.x + (cameraForward1.x > 0 ? step : -step), 
+              z: furniture.position.z 
+            };
+          } else {
+            // Z軸方向に移動
+            newPos1 = { 
+              x: furniture.position.x, 
+              z: furniture.position.z + (cameraForward1.z > 0 ? step : -step) 
+            };
+          }
           const constrainedPos1 = room1 ? constrainFurnitureToRoom(newPos1, { width, depth }, room1) : newPos1;
           updateFurniture(furniture.id, {
-            position: { ...furniture.position, z: constrainedPos1.z }
+            position: { ...furniture.position, x: constrainedPos1.x, z: constrainedPos1.z }
           });
           break;
 
-        case 'ArrowDown':
+        case 'ArrowDown': // ユーザーから見て後方向（最も近いグリッド軸に沿って）
           e.preventDefault();
+          const camera2 = camera;
+          const cameraDirection2 = new THREE.Vector3();
+          camera2.getWorldDirection(cameraDirection2);
+          
+          const cameraRight2 = new THREE.Vector3();
+          cameraRight2.crossVectors(cameraDirection2, camera2.up).normalize();
+          
+          const cameraForward2 = new THREE.Vector3();
+          cameraForward2.crossVectors(new THREE.Vector3(0, 1, 0), cameraRight2).normalize();
+          
+          const absX2 = Math.abs(cameraForward2.x);
+          const absZ2 = Math.abs(cameraForward2.z);
+          
           const room2 = rooms.find(r => r.id === furniture.roomId);
-          const newPos2 = { x: furniture.position.x, z: furniture.position.z - step };
+          let newPos2;
+          if (absX2 > absZ2) {
+            // X軸方向に移動
+            newPos2 = { 
+              x: furniture.position.x + (cameraForward2.x > 0 ? -step : step), 
+              z: furniture.position.z 
+            };
+          } else {
+            // Z軸方向に移動
+            newPos2 = { 
+              x: furniture.position.x, 
+              z: furniture.position.z + (cameraForward2.z > 0 ? -step : step) 
+            };
+          }
           const constrainedPos2 = room2 ? constrainFurnitureToRoom(newPos2, { width, depth }, room2) : newPos2;
           updateFurniture(furniture.id, {
-            position: { ...furniture.position, z: constrainedPos2.z }
+            position: { ...furniture.position, x: constrainedPos2.x, z: constrainedPos2.z }
           });
           break;
 
-        case 'ArrowLeft':
+        case 'ArrowLeft': // ユーザーから見て左方向（最も近いグリッド軸に沿って）
           e.preventDefault();
+          const camera3 = camera;
+          const cameraDirection3 = new THREE.Vector3();
+          camera3.getWorldDirection(cameraDirection3);
+          
+          const cameraRight3 = new THREE.Vector3();
+          cameraRight3.crossVectors(cameraDirection3, camera3.up).normalize();
+          
+          const absX3 = Math.abs(cameraRight3.x);
+          const absZ3 = Math.abs(cameraRight3.z);
+          
           const room3 = rooms.find(r => r.id === furniture.roomId);
-          const newPos3 = { x: furniture.position.x - step, z: furniture.position.z };
+          let newPos3;
+          if (absX3 > absZ3) {
+            // X軸方向に移動
+            newPos3 = { 
+              x: furniture.position.x + (cameraRight3.x > 0 ? -step : step), 
+              z: furniture.position.z 
+            };
+          } else {
+            // Z軸方向に移動
+            newPos3 = { 
+              x: furniture.position.x, 
+              z: furniture.position.z + (cameraRight3.z > 0 ? -step : step) 
+            };
+          }
           const constrainedPos3 = room3 ? constrainFurnitureToRoom(newPos3, { width, depth }, room3) : newPos3;
           updateFurniture(furniture.id, {
-            position: { ...furniture.position, x: constrainedPos3.x }
+            position: { ...furniture.position, x: constrainedPos3.x, z: constrainedPos3.z }
           });
           break;
 
-        case 'ArrowRight':
+        case 'ArrowRight': // ユーザーから見て右方向（最も近いグリッド軸に沿って）
           e.preventDefault();
+          const camera4 = camera;
+          const cameraDirection4 = new THREE.Vector3();
+          camera4.getWorldDirection(cameraDirection4);
+          
+          const cameraRight4 = new THREE.Vector3();
+          cameraRight4.crossVectors(cameraDirection4, camera4.up).normalize();
+          
+          const absX4 = Math.abs(cameraRight4.x);
+          const absZ4 = Math.abs(cameraRight4.z);
+          
           const room4 = rooms.find(r => r.id === furniture.roomId);
-          const newPos4 = { x: furniture.position.x + step, z: furniture.position.z };
+          let newPos4;
+          if (absX4 > absZ4) {
+            // X軸方向に移動
+            newPos4 = { 
+              x: furniture.position.x + (cameraRight4.x > 0 ? step : -step), 
+              z: furniture.position.z 
+            };
+          } else {
+            // Z軸方向に移動
+            newPos4 = { 
+              x: furniture.position.x, 
+              z: furniture.position.z + (cameraRight4.z > 0 ? step : -step) 
+            };
+          }
           const constrainedPos4 = room4 ? constrainFurnitureToRoom(newPos4, { width, depth }, room4) : newPos4;
           updateFurniture(furniture.id, {
-            position: { ...furniture.position, x: constrainedPos4.x }
+            position: { ...furniture.position, x: constrainedPos4.x, z: constrainedPos4.z }
           });
           break;
       }
@@ -147,7 +246,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isActive, furniture, updateFurniture, width, depth, rooms]);
+  }, [isActive, furniture, updateFurniture, width, depth, rooms, camera]);
 
   React.useEffect(() => {
     const handleGlobalPointerMove = (e: PointerEvent) => {

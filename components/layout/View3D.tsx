@@ -35,53 +35,53 @@ function Scene() {
       if (!controls) return;
 
       const panStep = 1.0; // 移動ステップ
+      const camera = controls.object;
+
+      // カメラの向きベクトルを取得
+      const cameraDirection = new THREE.Vector3();
+      camera.getWorldDirection(cameraDirection);
+      
+      // カメラの右方向ベクトルを計算
+      const cameraRight = new THREE.Vector3();
+      cameraRight.crossVectors(cameraDirection, camera.up).normalize();
+      
+      // カメラの上方向ベクトル（Y軸固定）
+      const cameraUp = new THREE.Vector3(0, 1, 0);
+      
+      // カメラの前方向ベクトル（Y軸を除いた水平面上の前方向）
+      const cameraForward = new THREE.Vector3();
+      cameraForward.crossVectors(cameraUp, cameraRight).normalize();
 
       switch (e.key) {
-        case 'ArrowUp':
+        case 'ArrowUp': // 前方向（ユーザーから見て奥へ）
           e.preventDefault();
-          const currentTarget = controls.target.clone();
-          const currentPosition = controls.object.position.clone();
-          const direction = new THREE.Vector3(0, 0, -panStep);
-          currentTarget.add(direction);
-          currentPosition.add(direction);
-          controls.target.copy(currentTarget);
-          controls.object.position.copy(currentPosition);
+          const forwardDirection = cameraForward.clone().multiplyScalar(panStep);
+          controls.target.add(forwardDirection);
+          controls.object.position.add(forwardDirection);
           controls.update();
           break;
 
-        case 'ArrowDown':
+        case 'ArrowDown': // 後方向（ユーザーから見て手前へ）
           e.preventDefault();
-          const currentTarget2 = controls.target.clone();
-          const currentPosition2 = controls.object.position.clone();
-          const direction2 = new THREE.Vector3(0, 0, panStep);
-          currentTarget2.add(direction2);
-          currentPosition2.add(direction2);
-          controls.target.copy(currentTarget2);
-          controls.object.position.copy(currentPosition2);
+          const backwardDirection = cameraForward.clone().multiplyScalar(-panStep);
+          controls.target.add(backwardDirection);
+          controls.object.position.add(backwardDirection);
           controls.update();
           break;
 
-        case 'ArrowLeft':
+        case 'ArrowLeft': // 左方向（ユーザーから見て左へ）
           e.preventDefault();
-          const currentTarget3 = controls.target.clone();
-          const currentPosition3 = controls.object.position.clone();
-          const direction3 = new THREE.Vector3(-panStep, 0, 0);
-          currentTarget3.add(direction3);
-          currentPosition3.add(direction3);
-          controls.target.copy(currentTarget3);
-          controls.object.position.copy(currentPosition3);
+          const leftDirection = cameraRight.clone().multiplyScalar(-panStep);
+          controls.target.add(leftDirection);
+          controls.object.position.add(leftDirection);
           controls.update();
           break;
 
-        case 'ArrowRight':
+        case 'ArrowRight': // 右方向（ユーザーから見て右へ）
           e.preventDefault();
-          const currentTarget4 = controls.target.clone();
-          const currentPosition4 = controls.object.position.clone();
-          const direction4 = new THREE.Vector3(panStep, 0, 0);
-          currentTarget4.add(direction4);
-          currentPosition4.add(direction4);
-          controls.target.copy(currentTarget4);
-          controls.object.position.copy(currentPosition4);
+          const rightDirection = cameraRight.clone().multiplyScalar(panStep);
+          controls.target.add(rightDirection);
+          controls.object.position.add(rightDirection);
           controls.update();
           break;
       }
