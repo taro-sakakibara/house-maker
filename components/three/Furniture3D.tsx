@@ -26,13 +26,16 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
 
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    setActiveFurnitureId(furniture.id);
-    setIsDragging(true);
+    
+    // アクティブ状態の場合のみドラッグを開始
+    if (isActive) {
+      setIsDragging(true);
 
-    // OrbitControlsを無効化
-    const controls = scene.userData.orbitControls;
-    if (controls) {
-      controls.enabled = false;
+      // OrbitControlsを無効化
+      const controls = scene.userData.orbitControls;
+      if (controls) {
+        controls.enabled = false;
+      }
     }
   };
 
@@ -81,6 +84,20 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
               depth: Math.max(furniture.size.depth - sizeStep, 10),
             }
           });
+          break;
+
+        // 選択解除
+        case 'Enter':
+          e.preventDefault();
+          setIsDragging(false);
+          
+          // OrbitControlsを再有効化
+          const controls = scene.userData.orbitControls;
+          if (controls) {
+            controls.enabled = true;
+          }
+          
+          setActiveFurnitureId(null);
           break;
 
         // 微調整移動
@@ -196,10 +213,27 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     };
   }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls]);
 
+  const handleDoubleClick = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    setActiveFurnitureId(furniture.id);
+    
+    // ダブルクリック直後にドラッグを開始する準備
+    setIsDragging(true);
+    
+    // OrbitControlsを無効化
+    const controls = scene.userData.orbitControls;
+    if (controls) {
+      controls.enabled = false;
+    }
+  };
+
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
-    if (!isDragging) { // ドラッグ中でない場合のみ選択
+    if (!isDragging) { // ドラッグ中でない場合のみ
       e.stopPropagation();
-      setActiveFurnitureId(furniture.id);
+      if (isActive) {
+        // アクティブ状態の場合は解除
+        setActiveFurnitureId(null);
+      }
     }
   };
 
@@ -214,6 +248,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
         receiveShadow
         onPointerDown={handlePointerDown}
         onClick={handleClick}
+        onDoubleClick={handleDoubleClick}
       >
         <boxGeometry args={[width, height, depth]} />
         <meshStandardMaterial 

@@ -3,6 +3,7 @@
 import React, { Suspense } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid, PerspectiveCamera } from "@react-three/drei";
+import * as THREE from "three";
 import { useApp } from "@/contexts/AppContext";
 import Room3D from "@/components/three/Room3D";
 import Furniture3D from "@/components/three/Furniture3D";
@@ -16,12 +17,81 @@ function Scene() {
     setActiveFurnitureId(null);
   };
 
+
   // OrbitControlsをsceneに保存
   React.useEffect(() => {
     if (controlsRef.current) {
       scene.userData.orbitControls = controlsRef.current;
     }
   }, [scene]);
+
+  // 視点移動のキーボード操作
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 家具が選択されている場合は視点移動を無効にする
+      if (activeFurnitureId) return;
+
+      const controls = controlsRef.current;
+      if (!controls) return;
+
+      const panStep = 1.0; // 移動ステップ
+
+      switch (e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          const currentTarget = controls.target.clone();
+          const currentPosition = controls.object.position.clone();
+          const direction = new THREE.Vector3(0, 0, -panStep);
+          currentTarget.add(direction);
+          currentPosition.add(direction);
+          controls.target.copy(currentTarget);
+          controls.object.position.copy(currentPosition);
+          controls.update();
+          break;
+
+        case 'ArrowDown':
+          e.preventDefault();
+          const currentTarget2 = controls.target.clone();
+          const currentPosition2 = controls.object.position.clone();
+          const direction2 = new THREE.Vector3(0, 0, panStep);
+          currentTarget2.add(direction2);
+          currentPosition2.add(direction2);
+          controls.target.copy(currentTarget2);
+          controls.object.position.copy(currentPosition2);
+          controls.update();
+          break;
+
+        case 'ArrowLeft':
+          e.preventDefault();
+          const currentTarget3 = controls.target.clone();
+          const currentPosition3 = controls.object.position.clone();
+          const direction3 = new THREE.Vector3(-panStep, 0, 0);
+          currentTarget3.add(direction3);
+          currentPosition3.add(direction3);
+          controls.target.copy(currentTarget3);
+          controls.object.position.copy(currentPosition3);
+          controls.update();
+          break;
+
+        case 'ArrowRight':
+          e.preventDefault();
+          const currentTarget4 = controls.target.clone();
+          const currentPosition4 = controls.object.position.clone();
+          const direction4 = new THREE.Vector3(panStep, 0, 0);
+          currentTarget4.add(direction4);
+          currentPosition4.add(direction4);
+          controls.target.copy(currentTarget4);
+          controls.object.position.copy(currentPosition4);
+          controls.update();
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeFurnitureId]);
 
   return (
     <>
@@ -129,13 +199,14 @@ export default function View3D() {
           <p className="font-semibold mb-1 text-gray-800">操作方法</p>
           <div className="space-y-1">
             <p className="text-gray-600">視点回転: 左ドラッグ</p>
-            <p className="text-gray-600">視点移動: 右ドラッグ</p>
+            <p className="text-gray-600">視点移動: 右ドラッグ / 矢印キー</p>
             <p className="text-gray-600">ズーム: ホイール</p>
             <hr className="border-gray-300" />
-            <p className="text-gray-600">家具移動: 家具を左ドラッグ</p>
+            <p className="text-gray-600">家具選択: 家具をダブルクリック</p>
+            <p className="text-gray-600">家具移動: 家具をドラッグ / 矢印キー</p>
             <p className="text-gray-600">家具回転: R キー</p>
             <p className="text-gray-600">サイズ変更: + / - キー</p>
-            <p className="text-gray-600">微調整: 矢印キー</p>
+            <p className="text-gray-600">選択解除: Enter キー</p>
           </div>
         </div>
       </div>
