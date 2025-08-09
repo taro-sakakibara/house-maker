@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useApp } from "@/contexts/AppContext";
+import { Room } from "@/types/room";
 
 interface RoomListProps {
-  onEditRoom?: (room: any) => void;
+  onEditRoom?: (room: Room) => void;
 }
 
 export default function RoomList({ onEditRoom }: RoomListProps) {

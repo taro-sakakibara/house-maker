@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useApp } from "@/contexts/AppContext";
+import { Furniture } from "@/types/furniture";
 
 interface FurnitureListProps {
-  onEditFurniture?: (furniture: any) => void;
+  onEditFurniture?: (furniture: Furniture) => void;
 }
 
 export default function FurnitureList({ onEditFurniture }: FurnitureListProps) {

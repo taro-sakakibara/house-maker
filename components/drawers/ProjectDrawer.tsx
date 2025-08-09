@@ -7,7 +7,7 @@ interface ProjectDrawerProps {
   onClose: () => void;
 }
 
-export default function ProjectDrawer({ onClose }: ProjectDrawerProps) {
+export default function ProjectDrawer({ onClose: _onClose }: ProjectDrawerProps) {
   const { 
     projects, 
     currentProject, 
@@ -45,7 +45,7 @@ export default function ProjectDrawer({ onClose }: ProjectDrawerProps) {
     setEditingName('');
   };
 
-  const startEditing = (project: any) => {
+  const startEditing = (project: { id: string; name: string }) => {
     setEditingProject(project.id);
     setEditingName(project.name);
   };
@@ -67,15 +67,15 @@ export default function ProjectDrawer({ onClose }: ProjectDrawerProps) {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit', 
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString('ja-JP', {
+  //     year: 'numeric',
+  //     month: '2-digit', 
+  //     day: '2-digit',
+  //     hour: '2-digit',
+  //     minute: '2-digit'
+  //   });
+  // };
 
   return (
     <div className="space-y-[12px]">

@@ -16,7 +16,7 @@ function Scene() {
     activeFurnitureId,
     setActiveFurnitureId,
   } = useApp();
-  const controlsRef = React.useRef<any>(null);
+  const controlsRef = React.useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const { scene } = useThree();
 
   const handleBackgroundClick = () => {

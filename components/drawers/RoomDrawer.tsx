@@ -4,29 +4,30 @@ import React, { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import RoomForm from '@/components/RoomForm';
 import RoomList from '@/components/RoomList';
+import { Room } from '@/types/room';
 
 interface RoomDrawerProps {
   onClose: () => void;
 }
 
-export default function RoomDrawer({ onClose }: RoomDrawerProps) {
+export default function RoomDrawer({ onClose: _onClose }: RoomDrawerProps) {
   const { rooms } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingRoom, setEditingRoom] = useState<any>(null);
+  const [editingRoom, setEditingRoom] = useState<Room | undefined>(undefined);
 
   const handleAddNew = () => {
-    setEditingRoom(null);
+    setEditingRoom(undefined);
     setShowForm(true);
   };
 
-  const handleEditRoom = (room: any) => {
+  const handleEditRoom = (room: Room) => {
     setEditingRoom(room);
     setShowForm(true);
   };
 
   const handleFormComplete = () => {
     setShowForm(false);
-    setEditingRoom(null);
+    setEditingRoom(undefined);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

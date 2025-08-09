@@ -4,31 +4,32 @@ import React, { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import FurnitureForm from '@/components/FurnitureForm';
 import FurnitureList from '@/components/FurnitureList';
+import { Furniture } from '@/types/furniture';
 
 interface FurnitureDrawerProps {
   onClose: () => void;
 }
 
-export default function FurnitureDrawer({ onClose }: FurnitureDrawerProps) {
-  const { furniture, activeRoomId, getFurnitureInRoom } = useApp();
+export default function FurnitureDrawer({ onClose: _onClose }: FurnitureDrawerProps) {
+  const { activeRoomId, getFurnitureInRoom } = useApp();
   const [showForm, setShowForm] = useState(false);
-  const [editingFurniture, setEditingFurniture] = useState<any>(null);
+  const [editingFurniture, setEditingFurniture] = useState<Furniture | undefined>(undefined);
 
   const roomFurniture = getFurnitureInRoom(activeRoomId);
 
   const handleAddNew = () => {
-    setEditingFurniture(null);
+    setEditingFurniture(undefined);
     setShowForm(true);
   };
 
-  const handleEditFurniture = (furniture: any) => {
+  const handleEditFurniture = (furniture: Furniture) => {
     setEditingFurniture(furniture);
     setShowForm(true);
   };
 
   const handleFormComplete = () => {
     setShowForm(false);
-    setEditingFurniture(null);
+    setEditingFurniture(undefined);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
