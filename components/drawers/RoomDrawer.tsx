@@ -36,7 +36,7 @@ export default function RoomDrawer({ onClose }: RoomDrawerProps) {
   };
 
   return (
-    <div className="space-y-[12px]" onKeyDown={handleKeyDown}>
+    <div className="space-y-[12px] max-w-full" onKeyDown={handleKeyDown}>
       {/* Add Room Button */}
       <button
         onClick={handleAddNew}

@@ -148,7 +148,7 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md"
+          className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
           placeholder="テーブル、椅子など"
         />
       </div>
@@ -173,7 +173,7 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
               onChange={handleInputChange}
               min="1"
               step="1"
-              className="w-full px-[12px] py-[8px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md text-sm"
+              className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
             />
           </div>
           
@@ -189,7 +189,7 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
               onChange={handleInputChange}
               min="1"
               step="1"
-              className="w-full px-[12px] py-[8px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md text-sm"
+              className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
             />
           </div>
           
@@ -205,7 +205,7 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
               onChange={handleInputChange}
               min="1"
               step="1"
-              className="w-full px-[12px] py-[8px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md text-sm"
+              className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-all"
             />
           </div>
         </div>

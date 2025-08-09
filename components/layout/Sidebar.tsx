@@ -106,7 +106,7 @@ export default function Sidebar() {
   return (
     <div className="h-screen">
       {/* Main Sidebar */}
-      <aside className="w-[320px] bg-white border-r border-gray-200 flex flex-col h-full">
+      <aside className="w-[320px] bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
         <div className="p-[16px]">
           <nav className="space-y-[4px]">
             {menuItems.map((item) => (

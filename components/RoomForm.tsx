@@ -189,7 +189,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                 type="number"
                 value={shapeParams.rectangle.width}
                 onChange={(e) => handleShapeParamChange('width', e.target.value)}
-                className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 min="10"
                 step="10"
               />
@@ -202,7 +202,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                 type="number"
                 value={shapeParams.rectangle.depth}
                 onChange={(e) => handleShapeParamChange('depth', e.target.value)}
-                className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 min="10"
                 step="10"
               />
@@ -222,7 +222,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.lShape.width}
                   onChange={(e) => handleShapeParamChange('width', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -235,7 +235,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.lShape.depth}
                   onChange={(e) => handleShapeParamChange('depth', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -250,7 +250,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.lShape.cutoutWidth}
                   onChange={(e) => handleShapeParamChange('cutoutWidth', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -263,7 +263,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.lShape.cutoutDepth}
                   onChange={(e) => handleShapeParamChange('cutoutDepth', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -284,7 +284,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.uShape.width}
                   onChange={(e) => handleShapeParamChange('width', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -297,7 +297,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.uShape.depth}
                   onChange={(e) => handleShapeParamChange('depth', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -312,7 +312,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.uShape.openingWidth}
                   onChange={(e) => handleShapeParamChange('openingWidth', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -325,7 +325,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
                   type="number"
                   value={shapeParams.uShape.armDepth}
                   onChange={(e) => handleShapeParamChange('armDepth', e.target.value)}
-                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+                  className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   min="10"
                   step="10"
                 />
@@ -351,7 +351,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+          className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
           placeholder="リビング、寝室など"
         />
       </div>
@@ -368,7 +368,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           name="shapeType"
           value={formData.shapeType}
           onChange={handleInputChange}
-          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md bg-white"
+          className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all bg-white"
         >
           <option value="rectangle">四角形</option>
           <option value="lShape">L字型</option>
@@ -393,7 +393,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           onChange={handleInputChange}
           step="10"
           min="10"
-          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
+          className="w-full px-[8px] py-[4px] border border-slate-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
         />
       </div>
 
@@ -411,7 +411,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
             name="floorColor"
             value={formData.floorColor}
             onChange={handleInputChange}
-            className="w-full h-[48px] border border-slate-300 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition-all"
+            className="w-full h-[32px] border border-slate-300 rounded cursor-pointer transition-all"
           />
         </div>
         <div>
@@ -427,7 +427,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
             name="wallColor"
             value={formData.wallColor}
             onChange={handleInputChange}
-            className="w-full h-[48px] border border-slate-300 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition-all"
+            className="w-full h-[32px] border border-slate-300 rounded cursor-pointer transition-all"
           />
         </div>
       </div>
@@ -443,7 +443,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
 
       <button
         type="submit"
-        className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white py-[12px] px-[24px] rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-[8px]"
+        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-[4px] px-[8px] rounded text-xs font-medium transition-all flex items-center justify-center space-x-[4px]"
       >
         <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={editingRoom ? "M5 13l4 4L19 7" : "M12 6v6m0 0v6m0-6h6m-6 0H6"} />

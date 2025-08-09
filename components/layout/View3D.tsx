@@ -9,14 +9,19 @@ import Room3D from "@/components/three/Room3D";
 import Furniture3D from "@/components/three/Furniture3D";
 
 function Scene() {
-  const { rooms, activeRoomId, furniture, activeFurnitureId, setActiveFurnitureId } = useApp();
+  const {
+    rooms,
+    activeRoomId,
+    furniture,
+    activeFurnitureId,
+    setActiveFurnitureId,
+  } = useApp();
   const controlsRef = React.useRef();
   const { scene } = useThree();
 
   const handleBackgroundClick = () => {
     setActiveFurnitureId(null);
   };
-
 
   // OrbitControlsをsceneに保存
   React.useEffect(() => {
@@ -33,18 +38,19 @@ function Scene() {
 
       // input、textareaなどのフォーカスがある場合は無効にする
       const activeElement = document.activeElement;
-      if (activeElement && (
-        activeElement.tagName === 'INPUT' ||
-        activeElement.tagName === 'TEXTAREA' ||
-        activeElement.tagName === 'SELECT' ||
-        activeElement.tagName === 'BUTTON' ||
-        activeElement.contentEditable === 'true'
-      )) {
+      if (
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          activeElement.tagName === "SELECT" ||
+          activeElement.tagName === "BUTTON" ||
+          activeElement.contentEditable === "true")
+      ) {
         return;
       }
 
       // サイドバー内でのキーボード操作の場合は無効にする
-      if (activeElement && activeElement.closest('aside')) {
+      if (activeElement && activeElement.closest("aside")) {
         return;
       }
 
@@ -57,36 +63,40 @@ function Scene() {
       // カメラの向きベクトルを取得
       const cameraDirection = new THREE.Vector3();
       camera.getWorldDirection(cameraDirection);
-      
+
       // カメラの右方向ベクトルを計算
       const cameraRight = new THREE.Vector3();
       cameraRight.crossVectors(cameraDirection, camera.up).normalize();
-      
+
       // カメラの上方向ベクトル（Y軸固定）
       const cameraUp = new THREE.Vector3(0, 1, 0);
-      
+
       // カメラの前方向ベクトル（Y軸を除いた水平面上の前方向）
       const cameraForward = new THREE.Vector3();
       cameraForward.crossVectors(cameraUp, cameraRight).normalize();
 
       switch (e.key) {
-        case 'ArrowUp': // 前方向（ユーザーから見て奥へ）
+        case "ArrowUp": // 前方向（ユーザーから見て奥へ）
           e.preventDefault();
-          const forwardDirection = cameraForward.clone().multiplyScalar(panStep);
+          const forwardDirection = cameraForward
+            .clone()
+            .multiplyScalar(panStep);
           controls.target.add(forwardDirection);
           controls.object.position.add(forwardDirection);
           controls.update();
           break;
 
-        case 'ArrowDown': // 後方向（ユーザーから見て手前へ）
+        case "ArrowDown": // 後方向（ユーザーから見て手前へ）
           e.preventDefault();
-          const backwardDirection = cameraForward.clone().multiplyScalar(-panStep);
+          const backwardDirection = cameraForward
+            .clone()
+            .multiplyScalar(-panStep);
           controls.target.add(backwardDirection);
           controls.object.position.add(backwardDirection);
           controls.update();
           break;
 
-        case 'ArrowLeft': // 左方向（ユーザーから見て左へ）
+        case "ArrowLeft": // 左方向（ユーザーから見て左へ）
           e.preventDefault();
           const leftDirection = cameraRight.clone().multiplyScalar(-panStep);
           controls.target.add(leftDirection);
@@ -94,7 +104,7 @@ function Scene() {
           controls.update();
           break;
 
-        case 'ArrowRight': // 右方向（ユーザーから見て右へ）
+        case "ArrowRight": // 右方向（ユーザーから見て右へ）
           e.preventDefault();
           const rightDirection = cameraRight.clone().multiplyScalar(panStep);
           controls.target.add(rightDirection);
@@ -104,9 +114,9 @@ function Scene() {
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [activeFurnitureId]);
 
@@ -117,10 +127,7 @@ function Scene() {
 
       {/* ライト設定 */}
       <ambientLight intensity={0.8} />
-      <directionalLight
-        position={[10, 10, 5]}
-        intensity={0.5}
-      />
+      <directionalLight position={[10, 10, 5]} intensity={0.5} />
 
       {/* コントロール */}
       <OrbitControls
@@ -171,13 +178,9 @@ function Scene() {
 
       {/* 部屋の3D表示 */}
       {rooms.map((room) => (
-        <Room3D 
-          key={room.id} 
-          room={room} 
-          isActive={room.id === activeRoomId}
-        />
+        <Room3D key={room.id} room={room} isActive={room.id === activeRoomId} />
       ))}
-      
+
       {/* 家具の3D表示 */}
       {furniture.map((item) => (
         <Furniture3D
@@ -186,7 +189,7 @@ function Scene() {
           isActive={item.id === activeFurnitureId}
         />
       ))}
-      
+
       {/* 部屋がない場合の仮のキューブ */}
       {rooms.length === 0 && (
         <mesh position={[0, 0.5, 0]}>
@@ -212,16 +215,18 @@ export default function View3D() {
         <div className="bg-white bg-opacity-90 p-[12px] rounded-lg text-sm shadow-lg border border-gray-200">
           <p className="font-semibold mb-[4px] text-gray-800">操作方法</p>
           <div className="space-y-[4px]">
-            <p className="text-gray-600">視点回転: 左ドラッグ</p>
-            <p className="text-gray-600">視点移動: 右ドラッグ / 矢印キー</p>
-            <p className="text-gray-600">ズーム: ホイール</p>
+            <p className="text-gray-600">視点回転: 3本指ドラッグ</p>
+            <p className="text-gray-600">視点移動: 矢印キー</p>
+            <p className="text-gray-600">ズーム: 2本指ピンチ / スクロール</p>
             <hr className="border-gray-300" />
-            <p className="text-gray-600">家具選択: 家具をダブルクリック</p>
+            <p className="text-gray-600">家具選択: 家具をダブルタップ</p>
             <p className="text-gray-600">水平移動: 家具をドラッグ / 矢印キー</p>
-            <p className="text-gray-600">垂直移動: Shift+ドラッグ / Shift+矢印キー</p>
+            <p className="text-gray-600">
+              垂直移動: Shift+ドラッグ / Shift+矢印キー
+            </p>
             <p className="text-gray-600">家具回転: R キー</p>
             <p className="text-gray-600">サイズ変更: + / - キー</p>
-            <p className="text-gray-600">選択解除: Enter キー</p>
+            <p className="text-gray-600">選択解除: クリック / Enter キー</p>
           </div>
         </div>
       </div>
