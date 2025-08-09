@@ -37,6 +37,101 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
   };
 
   // ドラッグ処理をグローバルイベントリスナーで処理するように変更
+  // キーボードイベントのハンドリング
+  React.useEffect(() => {
+    if (!isActive) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isActive) return;
+
+      const step = 0.1; // 移動ステップ（メートル）
+      const rotationStep = Math.PI / 8; // 回転ステップ（22.5度）
+      const sizeStep = 5; // サイズステップ（cm）
+
+      switch (e.key) {
+        // 回転
+        case 'r':
+        case 'R':
+          updateFurniture(furniture.id, {
+            rotation: {
+              ...furniture.rotation,
+              y: furniture.rotation.y + rotationStep,
+            }
+          });
+          break;
+
+        // サイズ変更
+        case '=':
+        case '+':
+          updateFurniture(furniture.id, {
+            size: {
+              width: Math.min(furniture.size.width + sizeStep, 500),
+              height: Math.min(furniture.size.height + sizeStep, 400),
+              depth: Math.min(furniture.size.depth + sizeStep, 500),
+            }
+          });
+          break;
+
+        case '-':
+        case '_':
+          updateFurniture(furniture.id, {
+            size: {
+              width: Math.max(furniture.size.width - sizeStep, 10),
+              height: Math.max(furniture.size.height - sizeStep, 10),
+              depth: Math.max(furniture.size.depth - sizeStep, 10),
+            }
+          });
+          break;
+
+        // 微調整移動
+        case 'ArrowUp':
+          e.preventDefault();
+          const room1 = rooms.find(r => r.id === furniture.roomId);
+          const newPos1 = { x: furniture.position.x, z: furniture.position.z + step };
+          const constrainedPos1 = room1 ? constrainFurnitureToRoom(newPos1, { width, depth }, room1) : newPos1;
+          updateFurniture(furniture.id, {
+            position: { ...furniture.position, z: constrainedPos1.z }
+          });
+          break;
+
+        case 'ArrowDown':
+          e.preventDefault();
+          const room2 = rooms.find(r => r.id === furniture.roomId);
+          const newPos2 = { x: furniture.position.x, z: furniture.position.z - step };
+          const constrainedPos2 = room2 ? constrainFurnitureToRoom(newPos2, { width, depth }, room2) : newPos2;
+          updateFurniture(furniture.id, {
+            position: { ...furniture.position, z: constrainedPos2.z }
+          });
+          break;
+
+        case 'ArrowLeft':
+          e.preventDefault();
+          const room3 = rooms.find(r => r.id === furniture.roomId);
+          const newPos3 = { x: furniture.position.x - step, z: furniture.position.z };
+          const constrainedPos3 = room3 ? constrainFurnitureToRoom(newPos3, { width, depth }, room3) : newPos3;
+          updateFurniture(furniture.id, {
+            position: { ...furniture.position, x: constrainedPos3.x }
+          });
+          break;
+
+        case 'ArrowRight':
+          e.preventDefault();
+          const room4 = rooms.find(r => r.id === furniture.roomId);
+          const newPos4 = { x: furniture.position.x + step, z: furniture.position.z };
+          const constrainedPos4 = room4 ? constrainFurnitureToRoom(newPos4, { width, depth }, room4) : newPos4;
+          updateFurniture(furniture.id, {
+            position: { ...furniture.position, x: constrainedPos4.x }
+          });
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isActive, furniture, updateFurniture, width, depth, rooms]);
+
   React.useEffect(() => {
     const handleGlobalPointerMove = (e: PointerEvent) => {
       if (!isDragging) return;

@@ -127,10 +127,16 @@ export default function View3D() {
       <div className="absolute bottom-[10px] left-[10px]">
         <div className="bg-white bg-opacity-90 p-3 rounded-lg text-sm shadow-lg border border-gray-200">
           <p className="font-semibold mb-1 text-gray-800">操作方法</p>
-          <p className="text-gray-600">視点回転: 左ドラッグ</p>
-          <p className="text-gray-600">視点移動: 右ドラッグ</p>
-          <p className="text-gray-600">ズーム: ホイール</p>
-          <p className="text-gray-600">家具移動: 家具を左ドラッグ</p>
+          <div className="space-y-1">
+            <p className="text-gray-600">視点回転: 左ドラッグ</p>
+            <p className="text-gray-600">視点移動: 右ドラッグ</p>
+            <p className="text-gray-600">ズーム: ホイール</p>
+            <hr className="border-gray-300" />
+            <p className="text-gray-600">家具移動: 家具を左ドラッグ</p>
+            <p className="text-gray-600">家具回転: R キー</p>
+            <p className="text-gray-600">サイズ変更: + / - キー</p>
+            <p className="text-gray-600">微調整: 矢印キー</p>
+          </div>
         </div>
       </div>
     </div>
