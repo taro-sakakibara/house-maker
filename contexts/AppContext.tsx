@@ -13,6 +13,7 @@ import {
   convertLegacyFurniture
 } from '@/utils/projectManager';
 import { saveProjectToLocal, loadProjectFromLocal } from '@/utils/fileUtils';
+import { gistStorage, isDevelopment, loadFromLocalFile } from '@/utils/gistStorage';
 
 interface AppContextType {
   // 現在のプロジェクトデータ
@@ -54,6 +55,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
   const [furniture, setFurniture] = useState<Furniture[]>([]);
   const [activeFurnitureId, setActiveFurnitureId] = useState<string | null>(null);
+
+  // 環境別保存ヘルパー関数
+  const saveProjectsData = async (data: ProjectsData): Promise<boolean> => {
+    if (isDevelopment()) {
+      // 開発環境：ローカルファイルに保存
+      return await saveProjectsToLocal(data);
+    } else {
+      // 本番環境：Gistに保存
+      const success = await gistStorage.saveData(data);
+      if (!success) {
+        console.warn('Failed to save to Gist, data only exists in memory');
+      }
+      return success;
+    }
+  };
   
   // プロジェクト管理
   const [projects, setProjects] = useState<ProjectMetadata[]>([]);
@@ -67,8 +83,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // アプリ起動時にプロジェクトデータを読み込み
   useEffect(() => {
     const loadInitialData = async () => {
-      // 新しいプロジェクト管理システムから読み込み
-      const newProjectsData = await loadProjectsFromLocal();
+      let newProjectsData: ProjectsData | null = null;
+      
+      // 環境別のデータ読み込み
+      if (isDevelopment()) {
+        // 開発環境：ローカルファイルから読み込み
+        console.log('Development mode: Loading from local file');
+        newProjectsData = await loadProjectsFromLocal();
+      } else {
+        // 本番環境：まずGistから読み込みを試行
+        console.log('Production mode: Loading from Gist');
+        newProjectsData = await gistStorage.loadData();
+        
+        // Gistから読み込み失敗時は静的ファイルから読み込み
+        if (!newProjectsData) {
+          console.log('Gist failed, falling back to local file');
+          newProjectsData = await loadFromLocalFile();
+        }
+      }
       if (newProjectsData) {
         setProjectsData(newProjectsData);
         setProjects(newProjectsData.projects.map(getProjectMetadata));
@@ -103,7 +135,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           version: '1.0.0',
         };
         
-        await saveProjectsToLocal(newProjectsData);
+        await saveProjectsData(newProjectsData);
         setProjectsData(newProjectsData);
         setProjects([getProjectMetadata(migratedProject)]);
         loadProjectIntoCurrentState(migratedProject);
@@ -183,7 +215,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeProjectId: newProject.id,
     };
     
-    const success = await saveProjectsToLocal(updatedProjectsData);
+    const success = await saveProjectsData(updatedProjectsData);
     if (success) {
       setProjectsData(updatedProjectsData);
       setProjects(updatedProjectsData.projects.map(getProjectMetadata));
@@ -207,7 +239,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           projects: updatedProjects,
         };
         
-        await saveProjectsToLocal(tempProjectsData);
+        await saveProjectsData(tempProjectsData);
         setProjectsData(tempProjectsData);
       }
       
@@ -216,7 +248,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         activeProjectId: projectId,
       };
       
-      const success = await saveProjectsToLocal(updatedProjectsData);
+      const success = await saveProjectsData(updatedProjectsData);
       if (success) {
         setProjectsData(updatedProjectsData);
         loadProjectIntoCurrentState(project);
@@ -239,7 +271,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       activeProjectId: newActiveProjectId,
     };
     
-    const success = await saveProjectsToLocal(updatedProjectsData);
+    const success = await saveProjectsData(updatedProjectsData);
     if (success) {
       setProjectsData(updatedProjectsData);
       setProjects(updatedProjectsData.projects.map(getProjectMetadata));
@@ -275,7 +307,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       projects: updatedProjects,
     };
     
-    const success = await saveProjectsToLocal(updatedProjectsData);
+    const success = await saveProjectsData(updatedProjectsData);
     if (success) {
       setProjectsData(updatedProjectsData);
       setProjects(updatedProjectsData.projects.map(getProjectMetadata));
@@ -303,7 +335,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       projects: updatedProjects,
     };
     
-    const success = await saveProjectsToLocal(updatedProjectsData);
+    const success = await saveProjectsData(updatedProjectsData);
     if (success) {
       setProjectsData(updatedProjectsData);
       setProjects(updatedProjectsData.projects.map(getProjectMetadata));
