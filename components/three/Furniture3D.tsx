@@ -50,7 +50,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
       if (!isActive) return;
 
       // input、textareaなどのフォーカスがある場合は無効にする
-      const activeElement = document.activeElement;
+      const activeElement = document.activeElement as HTMLElement;
       if (activeElement && (
         activeElement.tagName === 'INPUT' ||
         activeElement.tagName === 'TEXTAREA' ||

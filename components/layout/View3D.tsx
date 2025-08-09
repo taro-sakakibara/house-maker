@@ -16,7 +16,7 @@ function Scene() {
     activeFurnitureId,
     setActiveFurnitureId,
   } = useApp();
-  const controlsRef = React.useRef();
+  const controlsRef = React.useRef<any>(null);
   const { scene } = useThree();
 
   const handleBackgroundClick = () => {
@@ -37,7 +37,7 @@ function Scene() {
       if (activeFurnitureId) return;
 
       // input、textareaなどのフォーカスがある場合は無効にする
-      const activeElement = document.activeElement;
+      const activeElement = document.activeElement as HTMLElement;
       if (
         activeElement &&
         (activeElement.tagName === "INPUT" ||

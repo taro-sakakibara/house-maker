@@ -79,8 +79,8 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           }
         },
         height: (editingRoom.height * 100).toString(), // mからcmに変換
-        floorColor: editingRoom.floorColor,
-        wallColor: editingRoom.wallColor,
+        floorColor: editingRoom.floorColor || '#e0e0e0',
+        wallColor: editingRoom.wallColor || '#ffffff',
       });
     } else {
       setFormData(initialFormData);
