@@ -10,7 +10,7 @@ interface RoomDrawerProps {
   onClose: () => void;
 }
 
-export default function RoomDrawer({ onClose: _onClose }: RoomDrawerProps) {
+export default function RoomDrawer({}: RoomDrawerProps) {
   const { rooms } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | undefined>(undefined);

@@ -10,7 +10,7 @@ interface FurnitureDrawerProps {
   onClose: () => void;
 }
 
-export default function FurnitureDrawer({ onClose: _onClose }: FurnitureDrawerProps) {
+export default function FurnitureDrawer({}: FurnitureDrawerProps) {
   const { activeRoomId, getFurnitureInRoom } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [editingFurniture, setEditingFurniture] = useState<Furniture | undefined>(undefined);

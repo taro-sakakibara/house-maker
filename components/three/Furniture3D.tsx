@@ -290,7 +290,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isActive, furniture, updateFurniture, width, depth, rooms, camera]);
+  }, [isActive, furniture, updateFurniture, width, depth, rooms, camera, height, setActiveFurnitureId, scene.userData.orbitControls]);
 
   React.useEffect(() => {
     const handleGlobalPointerMove = (e: PointerEvent) => {
@@ -385,7 +385,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
       document.removeEventListener('pointermove', handleGlobalPointerMove);
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height]);
+  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height, depth, dragPlane, furniture.roomId, rooms, width]);
 
   const handleDoubleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();

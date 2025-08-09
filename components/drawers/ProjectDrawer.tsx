@@ -7,7 +7,7 @@ interface ProjectDrawerProps {
   onClose: () => void;
 }
 
-export default function ProjectDrawer({ onClose: _onClose }: ProjectDrawerProps) {
+export default function ProjectDrawer({}: ProjectDrawerProps) {
   const { 
     projects, 
     currentProject, 
