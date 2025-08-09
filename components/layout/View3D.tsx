@@ -44,6 +44,19 @@ function Scene() {
         enableZoom={true}
         enableRotate={true}
         maxPolarAngle={Math.PI / 2}
+        panSpeed={1.0}
+        rotateSpeed={0.5}
+        zoomSpeed={1.0}
+        zoomToCursor={true}
+        mouseButtons={{
+          LEFT: 0, // 左クリック：回転
+          MIDDLE: 1, // ミドルクリック：ズーム
+          RIGHT: 2, // 右クリック：パン（移動）
+        }}
+        touches={{
+          ONE: 0, // 1本指：回転
+          TWO: 2, // 2本指：パン・ズーム
+        }}
       />
 
       {/* グリッド */}
@@ -114,9 +127,10 @@ export default function View3D() {
       <div className="absolute bottom-[10px] left-[10px]">
         <div className="bg-white bg-opacity-90 p-3 rounded-lg text-sm shadow-lg border border-gray-200">
           <p className="font-semibold mb-1 text-gray-800">操作方法</p>
-          <p className="text-gray-600">回転: マウス左ドラッグ</p>
-          <p className="text-gray-600">ズーム: マウスホイール</p>
-          <p className="text-gray-600">移動: マウス右ドラッグ</p>
+          <p className="text-gray-600">視点回転: 左ドラッグ</p>
+          <p className="text-gray-600">視点移動: 右ドラッグ</p>
+          <p className="text-gray-600">ズーム: ホイール</p>
+          <p className="text-gray-600">家具移動: 家具を左ドラッグ</p>
         </div>
       </div>
     </div>
