@@ -134,9 +134,12 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+          <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
           家具名
         </label>
         <input
@@ -145,63 +148,74 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md"
           placeholder="テーブル、椅子など"
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <label htmlFor="width" className="block text-sm font-medium text-gray-700 mb-1">
-            幅 (cm)
-          </label>
-          <input
-            type="number"
-            id="width"
-            name="width"
-            value={formData.width}
-            onChange={handleInputChange}
-            min="1"
-            step="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="height" className="block text-sm font-medium text-gray-700 mb-1">
-            高さ (cm)
-          </label>
-          <input
-            type="number"
-            id="height"
-            name="height"
-            value={formData.height}
-            onChange={handleInputChange}
-            min="1"
-            step="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="depth" className="block text-sm font-medium text-gray-700 mb-1">
-            奥行き (cm)
-          </label>
-          <input
-            type="number"
-            id="depth"
-            name="depth"
-            value={formData.depth}
-            onChange={handleInputChange}
-            min="1"
-            step="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+      <div>
+        <h4 className="text-sm font-semibold text-slate-700 mb-[12px] flex items-center">
+          <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+          サイズ設定
+        </h4>
+        <div className="grid grid-cols-3 gap-[12px]">
+          <div>
+            <label htmlFor="width" className="block text-xs font-medium text-slate-600 mb-[4px]">
+              幅 (cm)
+            </label>
+            <input
+              type="number"
+              id="width"
+              name="width"
+              value={formData.width}
+              onChange={handleInputChange}
+              min="1"
+              step="1"
+              className="w-full px-[12px] py-[8px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md text-sm"
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="height" className="block text-xs font-medium text-slate-600 mb-[4px]">
+              高さ (cm)
+            </label>
+            <input
+              type="number"
+              id="height"
+              name="height"
+              value={formData.height}
+              onChange={handleInputChange}
+              min="1"
+              step="1"
+              className="w-full px-[12px] py-[8px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md text-sm"
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="depth" className="block text-xs font-medium text-slate-600 mb-[4px]">
+              奥行き (cm)
+            </label>
+            <input
+              type="number"
+              id="depth"
+              name="depth"
+              value={formData.depth}
+              onChange={handleInputChange}
+              min="1"
+              step="1"
+              className="w-full px-[12px] py-[8px] border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all shadow-sm hover:shadow-md text-sm"
+            />
+          </div>
         </div>
       </div>
 
       <div>
-        <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="color" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+          <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+          </svg>
           色
         </label>
         <input
@@ -210,32 +224,41 @@ export default function FurnitureForm({ editingFurniture, onEditComplete }: Furn
           name="color"
           value={formData.color}
           onChange={handleInputChange}
-          className="w-full h-10 border border-gray-300 rounded-md cursor-pointer"
+          className="w-full h-[48px] border border-slate-300 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition-all"
         />
       </div>
 
       {!activeRoomId && !editingFurniture && (
-        <div className="text-amber-600 text-sm bg-amber-50 p-2 rounded">
-          家具を追加するには、まず部屋を選択してください
+        <div className="bg-amber-50 border border-amber-200 text-amber-700 px-[16px] py-[12px] rounded-xl flex items-center space-x-[8px]">
+          <svg className="w-[20px] h-[20px] text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <span className="text-sm font-medium">家具を追加するには、まず部屋を選択してください</span>
         </div>
       )}
 
       {error && (
-        <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
-          {error}
+        <div className="bg-red-50 border border-red-200 text-red-700 px-[16px] py-[12px] rounded-xl flex items-center space-x-[8px]">
+          <svg className="w-[20px] h-[20px] text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-sm font-medium">{error}</span>
         </div>
       )}
 
       <button
         type="submit"
         disabled={!activeRoomId && !editingFurniture}
-        className={`w-full py-2 px-4 rounded-md transition-colors ${
+        className={`w-full py-[12px] px-[24px] rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-[8px] ${
           activeRoomId || editingFurniture
-            ? 'bg-green-500 text-white hover:bg-green-600'
-            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white'
+            : 'bg-slate-300 text-slate-500 cursor-not-allowed'
         }`}
       >
-        {editingFurniture ? '家具を更新' : '家具を追加'}
+        <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={editingFurniture ? "M5 13l4 4L19 7" : "M12 6v6m0 0v6m0-6h6m-6 0H6"} />
+        </svg>
+        <span>{editingFurniture ? '家具を更新' : '家具を追加'}</span>
       </button>
     </form>
   );

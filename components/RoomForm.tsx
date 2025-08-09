@@ -182,27 +182,27 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
         return (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                 幅 (cm)
               </label>
               <input
                 type="number"
                 value={shapeParams.rectangle.width}
                 onChange={(e) => handleShapeParamChange('width', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                 min="10"
                 step="10"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                 奥行き (cm)
               </label>
               <input
                 type="number"
                 value={shapeParams.rectangle.depth}
                 onChange={(e) => handleShapeParamChange('depth', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                 min="10"
                 step="10"
               />
@@ -213,57 +213,57 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
       case 'lShape':
         return (
           <>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-[8px]">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   全体幅 (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.lShape.width}
                   onChange={(e) => handleShapeParamChange('width', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   全体奥行き (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.lShape.depth}
                   onChange={(e) => handleShapeParamChange('depth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-[8px]">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   切り欠き幅 (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.lShape.cutoutWidth}
                   onChange={(e) => handleShapeParamChange('cutoutWidth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   切り欠き奥行き (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.lShape.cutoutDepth}
                   onChange={(e) => handleShapeParamChange('cutoutDepth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
@@ -275,57 +275,57 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
       case 'uShape':
         return (
           <>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-[8px]">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   全体幅 (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.uShape.width}
                   onChange={(e) => handleShapeParamChange('width', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   全体奥行き (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.uShape.depth}
                   onChange={(e) => handleShapeParamChange('depth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-[8px]">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   開口部幅 (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.uShape.openingWidth}
                   onChange={(e) => handleShapeParamChange('openingWidth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-[8px]">
                   腕の奥行き (cm)
                 </label>
                 <input
                   type="number"
                   value={shapeParams.uShape.armDepth}
                   onChange={(e) => handleShapeParamChange('armDepth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
                   min="10"
                   step="10"
                 />
@@ -337,9 +337,12 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+          <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
           部屋名
         </label>
         <input
@@ -348,13 +351,16 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
           placeholder="リビング、寝室など"
         />
       </div>
 
       <div>
-        <label htmlFor="shapeType" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="shapeType" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+          <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
           部屋の形状
         </label>
         <select
@@ -362,7 +368,7 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           name="shapeType"
           value={formData.shapeType}
           onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md bg-white"
         >
           <option value="rectangle">四角形</option>
           <option value="lShape">L字型</option>
@@ -373,7 +379,10 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
       {renderShapeParams()}
 
       <div>
-        <label htmlFor="height" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="height" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+          <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+          </svg>
           天井高 (cm)
         </label>
         <input
@@ -384,13 +393,16 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
           onChange={handleInputChange}
           step="10"
           min="10"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-[16px] py-[12px] border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all shadow-sm hover:shadow-md"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-[16px]">
         <div>
-          <label htmlFor="floorColor" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="floorColor" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+            <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+            </svg>
             床の色
           </label>
           <input
@@ -399,11 +411,14 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
             name="floorColor"
             value={formData.floorColor}
             onChange={handleInputChange}
-            className="w-full h-10 border border-gray-300 rounded-md cursor-pointer"
+            className="w-full h-[48px] border border-slate-300 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition-all"
           />
         </div>
         <div>
-          <label htmlFor="wallColor" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="wallColor" className="block text-sm font-semibold text-slate-700 mb-[8px] flex items-center">
+            <svg className="w-[16px] h-[16px] mr-[8px] text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
             壁の色
           </label>
           <input
@@ -412,22 +427,28 @@ export default function RoomForm({ editingRoom, onEditComplete }: RoomFormProps)
             name="wallColor"
             value={formData.wallColor}
             onChange={handleInputChange}
-            className="w-full h-10 border border-gray-300 rounded-md cursor-pointer"
+            className="w-full h-[48px] border border-slate-300 rounded-xl cursor-pointer shadow-sm hover:shadow-md transition-all"
           />
         </div>
       </div>
 
       {error && (
-        <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
-          {error}
+        <div className="bg-red-50 border border-red-200 text-red-700 px-[16px] py-[12px] rounded-xl flex items-center space-x-[8px]">
+          <svg className="w-[20px] h-[20px] text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-sm font-medium">{error}</span>
         </div>
       )}
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+        className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white py-[12px] px-[24px] rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-[8px]"
       >
-        {editingRoom ? '部屋を更新' : '部屋を追加'}
+        <svg className="w-[20px] h-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={editingRoom ? "M5 13l4 4L19 7" : "M12 6v6m0 0v6m0-6h6m-6 0H6"} />
+        </svg>
+        <span>{editingRoom ? '部屋を更新' : '部屋を追加'}</span>
       </button>
     </form>
   );

@@ -209,9 +209,9 @@ export default function View3D() {
 
       {/* 3D操作の説明 */}
       <div className="absolute bottom-[10px] left-[10px]">
-        <div className="bg-white bg-opacity-90 p-3 rounded-lg text-sm shadow-lg border border-gray-200">
-          <p className="font-semibold mb-1 text-gray-800">操作方法</p>
-          <div className="space-y-1">
+        <div className="bg-white bg-opacity-90 p-[12px] rounded-lg text-sm shadow-lg border border-gray-200">
+          <p className="font-semibold mb-[4px] text-gray-800">操作方法</p>
+          <div className="space-y-[4px]">
             <p className="text-gray-600">視点回転: 左ドラッグ</p>
             <p className="text-gray-600">視点移動: 右ドラッグ / 矢印キー</p>
             <p className="text-gray-600">ズーム: ホイール</p>
