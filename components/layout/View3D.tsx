@@ -17,6 +17,7 @@ function Scene() {
     furniture,
     activeFurnitureId,
     setActiveFurnitureId,
+    updateFurniture,
   } = useApp();
   const controlsRef = React.useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const { scene } = useThree();
@@ -114,13 +115,99 @@ function Scene() {
           controls.update();
           break;
       }
+
+      // 家具が選択されている場合の操作
+      if (activeFurnitureId) {
+        const selectedFurniture = furniture.find((f: Furniture) => f.id === activeFurnitureId);
+        if (!selectedFurniture) return;
+
+        switch (e.key.toLowerCase()) {
+          case "r":
+            e.preventDefault();
+            if (e.shiftKey) {
+              // Shift+R: 垂直回転（X軸）
+              const newVerticalRotation = {
+                ...selectedFurniture.rotation,
+                x: selectedFurniture.rotation.x + (Math.PI / 4)
+              };
+              updateFurniture(activeFurnitureId, { rotation: newVerticalRotation });
+            } else {
+              // R: 水平回転（Y軸）
+              const newHorizontalRotation = {
+                ...selectedFurniture.rotation,
+                y: selectedFurniture.rotation.y + (Math.PI / 4)
+              };
+              updateFurniture(activeFurnitureId, { rotation: newHorizontalRotation });
+            }
+            break;
+
+          case "+":
+          case "=":
+            e.preventDefault();
+            const newLargerSize = {
+              width: Math.min(500, selectedFurniture.size.width + 10), // 最大5m
+              height: selectedFurniture.size.height,
+              depth: Math.min(500, selectedFurniture.size.depth + 10)
+            };
+            updateFurniture(activeFurnitureId, { size: newLargerSize });
+            break;
+
+          case "-":
+            e.preventDefault();
+            const newSmallerSize = {
+              width: Math.max(10, selectedFurniture.size.width - 10), // 最小10cm
+              height: selectedFurniture.size.height,
+              depth: Math.max(10, selectedFurniture.size.depth - 10)
+            };
+            updateFurniture(activeFurnitureId, { size: newSmallerSize });
+            break;
+
+          case "ArrowUp":
+          case "ArrowDown":
+          case "ArrowLeft":
+          case "ArrowRight":
+            e.preventDefault();
+            const moveDistance = 0.5;
+            let newPosition = { ...selectedFurniture.position };
+
+            if (e.shiftKey) {
+              // Shift + 矢印キー: 垂直移動
+              switch (e.key) {
+                case "ArrowUp":
+                  newPosition.y += moveDistance;
+                  break;
+                case "ArrowDown":
+                  newPosition.y -= moveDistance;
+                  break;
+              }
+            } else {
+              // 通常の矢印キー: 水平移動
+              switch (e.key) {
+                case "ArrowUp":
+                  newPosition.z -= moveDistance;
+                  break;
+                case "ArrowDown":
+                  newPosition.z += moveDistance;
+                  break;
+                case "ArrowLeft":
+                  newPosition.x -= moveDistance;
+                  break;
+                case "ArrowRight":
+                  newPosition.x += moveDistance;
+                  break;
+              }
+            }
+            updateFurniture(activeFurnitureId, { position: newPosition });
+            break;
+        }
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeFurnitureId]);
+  }, [activeFurnitureId, furniture, updateFurniture]);
 
   return (
     <>
@@ -205,8 +292,22 @@ function Scene() {
 
 export default function View3D() {
   const [isHelpOpen, setIsHelpOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const { activeFurnitureId, updateFurniture, furniture } = useApp();
 
+  // 画面サイズを監視してモバイルかどうか判定
+  React.useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint = 1024px
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  // モバイル専用ハンドラー関数
   const handleMove = (direction: "up" | "down" | "left" | "right") => {
     if (!activeFurnitureId) return;
     
@@ -242,7 +343,20 @@ export default function View3D() {
 
     const newRotation = {
       ...selectedFurniture.rotation,
-      y: selectedFurniture.rotation.y + (Math.PI / 4) // 45度をラジアンに変換
+      y: selectedFurniture.rotation.y + (Math.PI / 4)
+    };
+    updateFurniture(activeFurnitureId, { rotation: newRotation });
+  };
+
+  const handleVerticalRotate = () => {
+    if (!activeFurnitureId) return;
+    
+    const selectedFurniture = furniture.find((f: Furniture) => f.id === activeFurnitureId);
+    if (!selectedFurniture) return;
+
+    const newRotation = {
+      ...selectedFurniture.rotation,
+      x: selectedFurniture.rotation.x + (Math.PI / 4)
     };
     updateFurniture(activeFurnitureId, { rotation: newRotation });
   };
@@ -253,14 +367,12 @@ export default function View3D() {
     const selectedFurniture = furniture.find((f: Furniture) => f.id === activeFurnitureId);
     if (!selectedFurniture) return;
 
-    // センチメートル単位で変更（10cm刻み）
-    const deltaInCm = delta * 100; // メートルをセンチメートルに変換
+    const deltaInCm = delta * 100;
     const newSize = {
-      width: Math.max(10, selectedFurniture.size.width + deltaInCm), // 最小10cm
+      width: Math.max(10, selectedFurniture.size.width + deltaInCm),
       height: selectedFurniture.size.height,
-      depth: Math.max(10, selectedFurniture.size.depth + deltaInCm)  // 最小10cm
+      depth: Math.max(10, selectedFurniture.size.depth + deltaInCm)
     };
-
 
     updateFurniture(activeFurnitureId, { size: newSize });
   };
@@ -274,11 +386,12 @@ export default function View3D() {
       </Canvas>
 
       {/* デスクトップ用の操作説明 */}
-      <div className="hidden lg:block absolute bottom-[10px] right-[10px]">
+      {!isMobile && (
+        <div className="absolute bottom-[10px] right-[10px]">
         {isHelpOpen ? (
           <div className="bg-white bg-opacity-90 p-[12px] rounded-lg text-sm shadow-lg border border-gray-200">
             <div className="flex items-center justify-between mb-[4px]">
-              <p className="font-semibold text-gray-800">操作方法</p>
+              <p className="font-semibold text-gray-800">操作方法（キーボード）</p>
               <button
                 onClick={() => setIsHelpOpen(false)}
                 className="p-[4px] hover:bg-gray-100 rounded transition-colors"
@@ -300,14 +413,15 @@ export default function View3D() {
               </button>
             </div>
             <div className="space-y-[4px]">
-              <p className="text-gray-600">視点回転: 3本指ドラッグ</p>
+              <p className="text-gray-600">視点回転: マウスドラッグ</p>
               <p className="text-gray-600">視点移動: 矢印キー</p>
-              <p className="text-gray-600">ズーム: 2本指ピンチ / スクロール</p>
+              <p className="text-gray-600">ズーム: スクロール</p>
               <hr className="border-gray-300" />
-              <p className="text-gray-600">家具選択: 家具をダブルタップ</p>
+              <p className="text-gray-600">家具選択: 家具をダブルクリック</p>
               <p className="text-gray-600">水平移動: 家具をドラッグ / 矢印キー</p>
               <p className="text-gray-600">垂直移動: Shift+ドラッグ / Shift+矢印キー</p>
-              <p className="text-gray-600">家具回転: R キー</p>
+              <p className="text-gray-600">水平回転: R キー</p>
+              <p className="text-gray-600">垂直回転: Shift+R キー</p>
               <p className="text-gray-600">サイズ変更: + / - キー</p>
               <p className="text-gray-600">選択解除: 空白部分をクリック</p>
             </div>
@@ -333,14 +447,18 @@ export default function View3D() {
             </svg>
           </button>
         )}
-      </div>
+        </div>
+      )}
 
       {/* モバイル用コントロール */}
-      <MobileControls
-        onMove={handleMove}
-        onRotate={handleRotate}
-        onSizeChange={handleSizeChange}
-      />
+      {isMobile && (
+        <MobileControls
+          onMove={handleMove}
+          onRotate={handleRotate}
+          onVerticalRotate={handleVerticalRotate}
+          onSizeChange={handleSizeChange}
+        />
+      )}
     </div>
   );
 }
