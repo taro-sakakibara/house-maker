@@ -1,12 +1,14 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 import { useApp } from "@/contexts/AppContext";
 import Room3D from "@/components/three/Room3D";
 import Furniture3D from "@/components/three/Furniture3D";
+import MobileControls from "@/components/MobileControls";
+import { Furniture } from "@/types/furniture";
 
 function Scene() {
   const {
@@ -202,6 +204,67 @@ function Scene() {
 }
 
 export default function View3D() {
+  const [isHelpOpen, setIsHelpOpen] = useState(true);
+  const { activeFurnitureId, updateFurniture, furniture } = useApp();
+
+  const handleMove = (direction: "up" | "down" | "left" | "right") => {
+    if (!activeFurnitureId) return;
+    
+    const selectedFurniture = furniture.find((f: Furniture) => f.id === activeFurnitureId);
+    if (!selectedFurniture) return;
+
+    const moveDistance = 0.5;
+    let newPosition = { ...selectedFurniture.position };
+
+    switch (direction) {
+      case "up":
+        newPosition.z -= moveDistance;
+        break;
+      case "down":
+        newPosition.z += moveDistance;
+        break;
+      case "left":
+        newPosition.x -= moveDistance;
+        break;
+      case "right":
+        newPosition.x += moveDistance;
+        break;
+    }
+
+    updateFurniture(activeFurnitureId, { position: newPosition });
+  };
+
+  const handleRotate = () => {
+    if (!activeFurnitureId) return;
+    
+    const selectedFurniture = furniture.find((f: Furniture) => f.id === activeFurnitureId);
+    if (!selectedFurniture) return;
+
+    const newRotation = {
+      ...selectedFurniture.rotation,
+      y: selectedFurniture.rotation.y + (Math.PI / 4) // 45度をラジアンに変換
+    };
+    updateFurniture(activeFurnitureId, { rotation: newRotation });
+  };
+
+  const handleSizeChange = (delta: number) => {
+    if (!activeFurnitureId) return;
+    
+    const selectedFurniture = furniture.find((f: Furniture) => f.id === activeFurnitureId);
+    if (!selectedFurniture) return;
+
+    // センチメートル単位で変更（10cm刻み）
+    const deltaInCm = delta * 100; // メートルをセンチメートルに変換
+    const newSize = {
+      width: Math.max(10, selectedFurniture.size.width + deltaInCm), // 最小10cm
+      height: selectedFurniture.size.height,
+      depth: Math.max(10, selectedFurniture.size.depth + deltaInCm)  // 最小10cm
+    };
+
+
+    updateFurniture(activeFurnitureId, { size: newSize });
+  };
+
   return (
     <div className="flex-1 bg-gray-50 relative h-full">
       <Canvas className="absolute inset-0">
@@ -210,26 +273,74 @@ export default function View3D() {
         </Suspense>
       </Canvas>
 
-      {/* 3D操作の説明 */}
-      <div className="absolute bottom-[10px] left-[10px]">
-        <div className="bg-white bg-opacity-90 p-[12px] rounded-lg text-sm shadow-lg border border-gray-200">
-          <p className="font-semibold mb-[4px] text-gray-800">操作方法</p>
-          <div className="space-y-[4px]">
-            <p className="text-gray-600">視点回転: 3本指ドラッグ</p>
-            <p className="text-gray-600">視点移動: 矢印キー</p>
-            <p className="text-gray-600">ズーム: 2本指ピンチ / スクロール</p>
-            <hr className="border-gray-300" />
-            <p className="text-gray-600">家具選択: 家具をダブルタップ</p>
-            <p className="text-gray-600">水平移動: 家具をドラッグ / 矢印キー</p>
-            <p className="text-gray-600">
-              垂直移動: Shift+ドラッグ / Shift+矢印キー
-            </p>
-            <p className="text-gray-600">家具回転: R キー</p>
-            <p className="text-gray-600">サイズ変更: + / - キー</p>
-            <p className="text-gray-600">選択解除: クリック / Enter キー</p>
+      {/* デスクトップ用の操作説明 */}
+      <div className="hidden lg:block absolute bottom-[10px] right-[10px]">
+        {isHelpOpen ? (
+          <div className="bg-white bg-opacity-90 p-[12px] rounded-lg text-sm shadow-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-[4px]">
+              <p className="font-semibold text-gray-800">操作方法</p>
+              <button
+                onClick={() => setIsHelpOpen(false)}
+                className="p-[4px] hover:bg-gray-100 rounded transition-colors"
+                aria-label="操作説明を閉じる"
+              >
+                <svg
+                  className="w-[16px] h-[16px] text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-[4px]">
+              <p className="text-gray-600">視点回転: 3本指ドラッグ</p>
+              <p className="text-gray-600">視点移動: 矢印キー</p>
+              <p className="text-gray-600">ズーム: 2本指ピンチ / スクロール</p>
+              <hr className="border-gray-300" />
+              <p className="text-gray-600">家具選択: 家具をダブルタップ</p>
+              <p className="text-gray-600">水平移動: 家具をドラッグ / 矢印キー</p>
+              <p className="text-gray-600">垂直移動: Shift+ドラッグ / Shift+矢印キー</p>
+              <p className="text-gray-600">家具回転: R キー</p>
+              <p className="text-gray-600">サイズ変更: + / - キー</p>
+              <p className="text-gray-600">選択解除: 空白部分をクリック</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <button
+            onClick={() => setIsHelpOpen(true)}
+            className="bg-white bg-opacity-90 p-[8px] rounded-lg shadow-lg border border-gray-200 hover:bg-opacity-100 transition-all"
+            aria-label="操作説明を表示"
+          >
+            <svg
+              className="w-[20px] h-[20px] text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        )}
       </div>
+
+      {/* モバイル用コントロール */}
+      <MobileControls
+        onMove={handleMove}
+        onRotate={handleRotate}
+        onSizeChange={handleSizeChange}
+      />
     </div>
   );
 }

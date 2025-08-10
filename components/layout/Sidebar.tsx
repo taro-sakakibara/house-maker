@@ -8,7 +8,12 @@ import ProjectDrawer from "@/components/drawers/ProjectDrawer";
 
 type DrawerType = "rooms" | "furniture" | "projects" | null;
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { saveCurrentProject } = useApp();
   const [activeDrawer, setActiveDrawer] = useState<DrawerType>(null);
 
@@ -104,9 +109,60 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="h-screen">
-      {/* Main Sidebar */}
-      <aside className="w-[320px] bg-white border-r border-gray-200 flex flex-col h-full overflow-y-auto">
+    <>
+      {/* モバイル用オーバーレイ */}
+      {isOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={onToggle}
+        />
+      )}
+      
+      {/* Toggle Button - 常に表示 */}
+      <button
+        onClick={onToggle}
+        className={`fixed top-[80px] bg-white border border-gray-200 rounded-r-lg p-[8px] hover:bg-gray-50 transition-all duration-300 z-50 ${
+          isOpen 
+            ? 'lg:left-[320px] left-[320px]' 
+            : 'left-0'
+        }`}
+        aria-label={isOpen ? "サイドバーを閉じる" : "サイドバーを開く"}
+      >
+        <svg
+          className="w-[20px] h-[20px] text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d={isOpen ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"}
+          />
+        </svg>
+      </button>
+      
+      {/* デスクトップ: 通常のflex要素、モバイル: 固定オーバーレイ */}
+      <div className={`
+        lg:relative lg:flex lg:flex-shrink-0
+        lg:transition-all lg:duration-300
+        ${isOpen 
+          ? 'lg:w-[320px]' 
+          : 'lg:w-0'
+        }
+      `}>
+        
+        {/* Main Sidebar */}
+        <aside className={`
+          w-[320px] bg-white border-r border-gray-200 flex flex-col overflow-y-auto transition-transform duration-300
+          lg:translate-x-0 lg:relative lg:z-auto lg:h-full
+          fixed lg:static top-0 left-0 z-50 h-screen
+          ${isOpen 
+            ? 'translate-x-0' 
+            : '-translate-x-full lg:translate-x-0'
+          }
+        `}>
         <div className="p-[16px]">
           <nav className="space-y-[4px]">
             {menuItems.map((item) => (
@@ -142,6 +198,7 @@ export default function Sidebar() {
           </nav>
         </div>
       </aside>
-    </div>
+      </div>
+    </>
   );
 }
