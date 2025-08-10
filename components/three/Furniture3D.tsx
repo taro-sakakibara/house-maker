@@ -21,6 +21,8 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
   const [raycaster] = useState(new THREE.Raycaster());
   const [initialMouseY, setInitialMouseY] = useState(0);
   const [initialFurnitureY, setInitialFurnitureY] = useState(0);
+  const [dragStartPosition, setDragStartPosition] = useState<{x: number, z: number} | null>(null);
+  const [initialMousePosition, setInitialMousePosition] = useState<{x: number, y: number} | null>(null);
 
   // 家具のサイズをメートルに変換
   const width = cmToM(furniture.size.width);
@@ -325,49 +327,79 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
         // 通常の水平ドラッグ処理
         setIsVerticalDragging(false);
         
+        if (!dragStartPosition || !initialMousePosition) {
+          // 初期位置が設定されていない場合は設定
+          const canvas = gl.domElement;
+          const rect = canvas.getBoundingClientRect();
+          setInitialMousePosition({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+          });
+          setDragStartPosition({
+            x: furniture.position.x,
+            z: furniture.position.z
+          });
+          return;
+        }
+        
         const canvas = gl.domElement;
         const rect = canvas.getBoundingClientRect();
-        const mouse = new THREE.Vector2();
-        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
         
-        // レイキャストで床平面との交点を求める
-        raycaster.setFromCamera(mouse, camera);
-        const intersection = new THREE.Vector3();
-        raycaster.ray.intersectPlane(dragPlane, intersection);
+        // マウスの移動量を計算
+        const deltaX = (e.clientX - rect.left) - initialMousePosition.x;
+        const deltaY = (e.clientY - rect.top) - initialMousePosition.y;
         
-        if (intersection) {
-          // 家具が属する部屋を取得
-          const room = rooms.find(r => r.id === furniture.roomId);
-          
-          let newPosition = {
-            x: intersection.x,
-            z: intersection.z,
-          };
+        // 画面上の移動量を3D空間の移動量に変換
+        const movementScale = 0.01; // スケール調整
+        const cameraDistance = camera.position.distanceTo(new THREE.Vector3(furniture.position.x, furniture.position.y, furniture.position.z));
+        const scaledMovement = movementScale * (cameraDistance / 10); // カメラ距離に応じてスケール調整
+        
+        // カメラの向きに基づいて移動方向を計算
+        const cameraDirection = new THREE.Vector3();
+        camera.getWorldDirection(cameraDirection);
+        
+        const cameraRight = new THREE.Vector3();
+        cameraRight.crossVectors(cameraDirection, camera.up).normalize();
+        
+        const cameraUp = new THREE.Vector3(0, 1, 0);
+        const cameraForward = new THREE.Vector3();
+        cameraForward.crossVectors(cameraUp, cameraRight).normalize();
+        
+        // 新しい位置を計算
+        let newPosition = {
+          x: dragStartPosition.x + (cameraRight.x * deltaX + cameraForward.x * (-deltaY)) * scaledMovement,
+          z: dragStartPosition.z + (cameraRight.z * deltaX + cameraForward.z * (-deltaY)) * scaledMovement,
+        };
 
-          // 部屋内に制限
-          if (room) {
-            newPosition = constrainFurnitureToRoom(
-              newPosition,
-              { width, depth },
-              room
-            );
-          }
-
-          updateFurniture(furniture.id, {
-            position: {
-              x: newPosition.x,
-              y: furniture.position.y,
-              z: newPosition.z,
-            }
-          });
+        // 家具が属する部屋を取得
+        const room = rooms.find(r => r.id === furniture.roomId);
+        
+        // 部屋内に制限
+        if (room) {
+          newPosition = constrainFurnitureToRoom(
+            newPosition,
+            { width, depth },
+            room
+          );
         }
+
+        updateFurniture(furniture.id, {
+          position: {
+            x: newPosition.x,
+            y: furniture.position.y,
+            z: newPosition.z,
+          }
+        });
       }
     };
 
     const handleGlobalPointerUp = () => {
       setIsDragging(false);
       setIsVerticalDragging(false);
+      
+      // ドラッグ関連の状態をリセット
+      setDragStartPosition(null);
+      setInitialMousePosition(null);
       
       // OrbitControlsを再有効化
       const controls = scene.userData.orbitControls;
@@ -385,7 +417,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
       document.removeEventListener('pointermove', handleGlobalPointerMove);
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height, depth, dragPlane, furniture.roomId, rooms, width]);
+  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height, depth, dragPlane, furniture.roomId, rooms, width, dragStartPosition, initialMousePosition]);
 
   const handleDoubleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
@@ -393,6 +425,18 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     
     // 通常のダブルクリック：水平ドラッグを開始
     setIsDragging(true);
+    
+    // ドラッグ開始位置を初期化（ダブルクリック時点でのマウス位置と家具位置を記録）
+    const canvas = gl.domElement;
+    const rect = canvas.getBoundingClientRect();
+    setInitialMousePosition({
+      x: e.nativeEvent.clientX - rect.left,
+      y: e.nativeEvent.clientY - rect.top
+    });
+    setDragStartPosition({
+      x: furniture.position.x,
+      z: furniture.position.z
+    });
     
     // OrbitControlsを無効化
     const controls = scene.userData.orbitControls;
