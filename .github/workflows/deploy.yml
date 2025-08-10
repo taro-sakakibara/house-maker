@@ -40,9 +40,6 @@ jobs:
           NEXT_PUBLIC_GIST_ID: ${{ secrets.NEXT_PUBLIC_GIST_ID }}
           NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NEXT_PUBLIC_GITHUB_TOKEN }}
 
-      - name: List build output
-        run: ls -la
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
