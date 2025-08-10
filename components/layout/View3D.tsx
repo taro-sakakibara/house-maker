@@ -168,6 +168,7 @@ function Scene() {
           case "ArrowRight":
             e.preventDefault();
             const moveDistance = 0.5;
+            // eslint-disable-next-line prefer-const
             let newPosition = { ...selectedFurniture.position };
 
             if (e.shiftKey) {
@@ -333,6 +334,7 @@ export default function View3D() {
     if (!selectedFurniture) return;
 
     const moveDistance = 0.5;
+    // eslint-disable-next-line prefer-const
     let newPosition = { ...selectedFurniture.position };
 
     switch (direction) {

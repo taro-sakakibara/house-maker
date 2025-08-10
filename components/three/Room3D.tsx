@@ -11,7 +11,7 @@ interface Room3DProps {
 export default function Room3D({ room, isActive = false }: Room3DProps) {
   const groupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
-  const wallMaterials = useRef<THREE.MeshBasicMaterial[]>([]);
+  const wallMaterials = useRef<THREE.MeshLambertMaterial[]>([]);
   // 頂点から床面のジオメトリを作成
   const createFloorGeometry = () => {
     // 三角形分割で床面を作成
@@ -166,7 +166,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            array={new Float32Array((() => {
+            args={[new Float32Array((() => {
               const points: number[] = [];
               
               // 各壁の頂点から上下のエッジラインを作成
@@ -187,9 +187,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
               });
               
               return points;
-            })())}
-            count={room.vertices.length * 6}
-            itemSize={3}
+            })()), 3]}
           />
         </bufferGeometry>
         <lineBasicMaterial 
@@ -205,7 +203,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            array={new Float32Array((() => {
+            args={[new Float32Array((() => {
               const points: number[] = [];
               const offset = 0.01; // 壁の内側に少しオフセット
               
@@ -248,9 +246,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
               });
               
               return points;
-            })())}
-            count={room.vertices.length * 6}
-            itemSize={3}
+            })()), 3]}
           />
         </bufferGeometry>
         <lineBasicMaterial 
