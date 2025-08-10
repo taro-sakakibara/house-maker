@@ -112,9 +112,9 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* 床面 - 直接3D座標で配置 */}
-      <mesh position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]} receiveShadow>
         <primitive object={floorGeometry} />
-        <meshBasicMaterial 
+        <meshLambertMaterial 
           color={room.floorColor || '#e0e0e0'} 
           side={THREE.DoubleSide}
         />
@@ -134,7 +134,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
         
         // マテリアルをrefに保存
         if (!wallMaterials.current[index]) {
-          wallMaterials.current[index] = new THREE.MeshBasicMaterial({
+          wallMaterials.current[index] = new THREE.MeshLambertMaterial({
             color: room.wallColor || '#ffffff',
             side: THREE.DoubleSide,
           });
@@ -145,6 +145,7 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
             key={`wall-${index}`}
             position={[centerX, centerY, centerZ]}
             rotation={[0, angle, 0]}
+            receiveShadow
           >
             <primitive object={wallGeometries[index]} />
             <primitive object={wallMaterials.current[index]} />
@@ -159,6 +160,106 @@ export default function Room3D({ room, isActive = false }: Room3DProps) {
           <lineBasicMaterial color="#3b82f6" linewidth={3} />
         </lineSegments>
       )}
+
+      {/* 部屋の角（エッジ）のアウトライン - 外側 */}
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            array={new Float32Array((() => {
+              const points: number[] = [];
+              
+              // 各壁の頂点から上下のエッジラインを作成
+              room.vertices.forEach((vertex, index) => {
+                const nextVertex = room.vertices[(index + 1) % room.vertices.length];
+                
+                // 壁の下端（床レベル）
+                points.push(vertex.x, 0, vertex.y);
+                points.push(nextVertex.x, 0, nextVertex.y);
+                
+                // 壁の上端（天井レベル）
+                points.push(vertex.x, room.height, vertex.y);
+                points.push(nextVertex.x, room.height, nextVertex.y);
+                
+                // 垂直エッジ（各角の縦線）
+                points.push(vertex.x, 0, vertex.y);
+                points.push(vertex.x, room.height, vertex.y);
+              });
+              
+              return points;
+            })())}
+            count={room.vertices.length * 6}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial 
+          color="#555555" 
+          linewidth={1.5}
+          opacity={0.8}
+          transparent
+        />
+      </lineSegments>
+
+      {/* 部屋の角（エッジ）のアウトライン - 内側用（少しオフセット） */}
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            array={new Float32Array((() => {
+              const points: number[] = [];
+              const offset = 0.01; // 壁の内側に少しオフセット
+              
+              // 各壁の頂点から上下のエッジラインを作成（内側用）
+              room.vertices.forEach((vertex, index) => {
+                const nextVertex = room.vertices[(index + 1) % room.vertices.length];
+                
+                // 壁の内側方向のベクトルを計算
+                const wallVector = {
+                  x: nextVertex.x - vertex.x,
+                  y: nextVertex.y - vertex.y
+                };
+                const wallLength = Math.sqrt(wallVector.x ** 2 + wallVector.y ** 2);
+                const wallNormal = {
+                  x: -wallVector.y / wallLength * offset,
+                  y: wallVector.x / wallLength * offset
+                };
+                
+                // 内側にオフセットした座標
+                const innerVertex = {
+                  x: vertex.x + wallNormal.x,
+                  y: vertex.y + wallNormal.y
+                };
+                const innerNextVertex = {
+                  x: nextVertex.x + wallNormal.x,
+                  y: nextVertex.y + wallNormal.y
+                };
+                
+                // 壁の下端（床レベル）- 内側
+                points.push(innerVertex.x, 0.01, innerVertex.y);
+                points.push(innerNextVertex.x, 0.01, innerNextVertex.y);
+                
+                // 壁の上端（天井レベル）- 内側
+                points.push(innerVertex.x, room.height - 0.01, innerVertex.y);
+                points.push(innerNextVertex.x, room.height - 0.01, innerNextVertex.y);
+                
+                // 垂直エッジ（各角の縦線）- 内側
+                points.push(innerVertex.x, 0.01, innerVertex.y);
+                points.push(innerVertex.x, room.height - 0.01, innerVertex.y);
+              });
+              
+              return points;
+            })())}
+            count={room.vertices.length * 6}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial 
+          color="#666666" 
+          linewidth={1}
+          opacity={0.6}
+          transparent
+        />
+      </lineSegments>
     </group>
   );
 }

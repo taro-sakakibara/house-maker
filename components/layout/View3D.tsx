@@ -215,8 +215,25 @@ function Scene() {
       <PerspectiveCamera makeDefault position={[10, 10, 10]} fov={60} />
 
       {/* ライト設定 */}
-      <ambientLight intensity={0.8} />
-      <directionalLight position={[10, 10, 5]} intensity={0.5} />
+      <ambientLight intensity={0.4} />
+      <directionalLight 
+        position={[10, 10, 10]} 
+        intensity={1.0}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={50}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+      />
+      {/* 補助光 */}
+      <directionalLight 
+        position={[-10, 5, -10]} 
+        intensity={0.3}
+        color="#87CEEB"
+      />
 
       {/* コントロール */}
       <OrbitControls
@@ -260,9 +277,10 @@ function Scene() {
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.01, 0]}
         onClick={handleBackgroundClick}
+        receiveShadow
       >
-        <planeGeometry args={[20, 20]} />
-        <meshBasicMaterial color="#f0f0f0" />
+        <planeGeometry args={[40, 40]} />
+        <meshLambertMaterial color="#f5f5f5" />
       </mesh>
 
       {/* 部屋の3D表示 */}
@@ -379,7 +397,10 @@ export default function View3D() {
 
   return (
     <div className="flex-1 bg-gray-50 relative h-full">
-      <Canvas className="absolute inset-0">
+      <Canvas 
+        className="absolute inset-0"
+        shadows
+      >
         <Suspense fallback={null}>
           <Scene />
         </Suspense>

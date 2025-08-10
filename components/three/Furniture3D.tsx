@@ -421,22 +421,27 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
         onPointerDown={handlePointerDown}
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
+        castShadow
+        receiveShadow
       >
         <boxGeometry args={[width, height, depth]} />
-        <meshBasicMaterial 
+        <meshLambertMaterial 
           color={furniture.color}
           opacity={isDragging ? 0.7 : 1}
           transparent={isDragging}
         />
       </mesh>
 
-      {/* アクティブな家具の輪郭表示 */}
-      {isActive && (
-        <lineSegments>
-          <edgesGeometry args={[new THREE.BoxGeometry(width, height, depth)]} />
-          <lineBasicMaterial color="#10b981" linewidth={2} />
-        </lineSegments>
-      )}
+      {/* 家具の輪郭表示 */}
+      <lineSegments>
+        <edgesGeometry args={[new THREE.BoxGeometry(width, height, depth)]} />
+        <lineBasicMaterial 
+          color={isActive ? "#10b981" : "#666666"} 
+          linewidth={isActive ? 3 : 1}
+          opacity={0.8}
+          transparent
+        />
+      </lineSegments>
 
     </group>
   );
