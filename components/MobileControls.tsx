@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useApp } from "@/contexts/AppContext";
 
@@ -14,6 +14,25 @@ interface MobileControlsProps {
 export default function MobileControls({ onMove, onRotate, onVerticalRotate, onSizeChange }: MobileControlsProps) {
   const { activeFurnitureId } = useApp();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [safeBottomMargin, setSafeBottomMargin] = useState(20);
+
+  // Calculate safe bottom margin to avoid browser UI overlap
+  useEffect(() => {
+    const calculateSafeMargin = () => {
+      // On mobile browsers, use a larger margin to avoid browser UI panels
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const baseMargin = 20;
+      const mobileExtraMargin = 80; // Extra margin for mobile browser UI
+      
+      setSafeBottomMargin(isMobile ? baseMargin + mobileExtraMargin : baseMargin);
+    };
+
+    calculateSafeMargin();
+    
+    // Recalculate on resize (orientation change, etc.)
+    window.addEventListener('resize', calculateSafeMargin);
+    return () => window.removeEventListener('resize', calculateSafeMargin);
+  }, []);
 
 
   if (!activeFurnitureId) return null;
@@ -78,7 +97,12 @@ export default function MobileControls({ onMove, onRotate, onVerticalRotate, onS
       {/* ヘルプモーダル - ポータルで表示 */}
       {modalContent}
       
-    <div className="absolute bottom-[20px] left-[20px] flex flex-col gap-[6px]">
+    <div 
+      className="fixed left-[20px] flex flex-col gap-[6px] z-50"
+      style={{ 
+        bottom: `${safeBottomMargin}px`
+      }}
+    >
       {/* 移動コントロール */}
       <div className="bg-white bg-opacity-90 rounded-lg shadow-lg border border-gray-200 p-[6px]">
         <div className="grid grid-cols-3 grid-rows-3 gap-[3px]">

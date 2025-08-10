@@ -9,6 +9,8 @@ import Room3D from "@/components/three/Room3D";
 import Furniture3D from "@/components/three/Furniture3D";
 import MobileControls from "@/components/MobileControls";
 import { Furniture } from "@/types/furniture";
+import { constrainFurnitureToRoom } from "@/utils/roomBounds";
+import { cmToM } from "@/utils/furnitureUtils";
 
 function Scene() {
   const {
@@ -181,24 +183,39 @@ function Scene() {
                   newPosition.y -= moveDistance;
                   break;
               }
+              // 垂直移動はそのまま更新
+              updateFurniture(activeFurnitureId, { position: newPosition });
             } else {
               // 通常の矢印キー: 水平移動
+              let horizontalPosition = { x: newPosition.x, z: newPosition.z };
+              
               switch (e.key) {
                 case "ArrowUp":
-                  newPosition.z -= moveDistance;
+                  horizontalPosition.z -= moveDistance;
                   break;
                 case "ArrowDown":
-                  newPosition.z += moveDistance;
+                  horizontalPosition.z += moveDistance;
                   break;
                 case "ArrowLeft":
-                  newPosition.x -= moveDistance;
+                  horizontalPosition.x -= moveDistance;
                   break;
                 case "ArrowRight":
-                  newPosition.x += moveDistance;
+                  horizontalPosition.x += moveDistance;
                   break;
               }
+              
+              // 家具が属する部屋を取得
+              const room = rooms.find(r => r.id === selectedFurniture.roomId);
+              
+              // 部屋内に制限
+              if (room) {
+                const width = cmToM(selectedFurniture.size.width);
+                const depth = cmToM(selectedFurniture.size.depth);
+                horizontalPosition = constrainFurnitureToRoom(horizontalPosition, { width, depth }, room);
+              }
+              
+              updateFurniture(activeFurnitureId, { position: { ...newPosition, x: horizontalPosition.x, z: horizontalPosition.z } });
             }
-            updateFurniture(activeFurnitureId, { position: newPosition });
             break;
         }
       }
@@ -208,7 +225,7 @@ function Scene() {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeFurnitureId, furniture, updateFurniture]);
+  }, [activeFurnitureId, furniture, updateFurniture, rooms]);
 
   return (
     <>
@@ -312,7 +329,7 @@ function Scene() {
 export default function View3D() {
   const [isHelpOpen, setIsHelpOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const { activeFurnitureId, updateFurniture, furniture } = useApp();
+  const { activeFurnitureId, updateFurniture, furniture, rooms } = useApp();
 
   // 画面サイズを監視してモバイルかどうか判定
   React.useEffect(() => {
@@ -334,8 +351,7 @@ export default function View3D() {
     if (!selectedFurniture) return;
 
     const moveDistance = 0.5;
-    // eslint-disable-next-line prefer-const
-    let newPosition = { ...selectedFurniture.position };
+    let newPosition = { x: selectedFurniture.position.x, z: selectedFurniture.position.z };
 
     switch (direction) {
       case "up":
@@ -352,7 +368,17 @@ export default function View3D() {
         break;
     }
 
-    updateFurniture(activeFurnitureId, { position: newPosition });
+    // 家具が属する部屋を取得
+    const room = rooms.find(r => r.id === selectedFurniture.roomId);
+    
+    // 部屋内に制限
+    if (room) {
+      const width = cmToM(selectedFurniture.size.width);
+      const depth = cmToM(selectedFurniture.size.depth);
+      newPosition = constrainFurnitureToRoom(newPosition, { width, depth }, room);
+    }
+
+    updateFurniture(activeFurnitureId, { position: { ...selectedFurniture.position, x: newPosition.x, z: newPosition.z } });
   };
 
   const handleRotate = () => {

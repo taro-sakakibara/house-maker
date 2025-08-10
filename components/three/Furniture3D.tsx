@@ -23,6 +23,10 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
   const [initialFurnitureY, setInitialFurnitureY] = useState(0);
   const [dragStartPosition, setDragStartPosition] = useState<{x: number, z: number} | null>(null);
   const [initialMousePosition, setInitialMousePosition] = useState<{x: number, y: number} | null>(null);
+  const [lastTapTime, setLastTapTime] = useState(0);
+  const [tapTimeout, setTapTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isPointerDown, setIsPointerDown] = useState(false);
+  const [pointerStartPos, setPointerStartPos] = useState<{x: number, y: number} | null>(null);
 
   // 家具のサイズをメートルに変換
   const width = cmToM(furniture.size.width);
@@ -32,15 +36,41 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
   const handlePointerDown = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     
-    // アクティブ状態の場合のみドラッグを開始
-    if (isActive) {
-      setIsDragging(true);
-
-      // OrbitControlsを無効化
-      const controls = scene.userData.orbitControls;
-      if (controls) {
-        controls.enabled = false;
+    // ダブルタップ検出
+    const now = Date.now();
+    const tapDelay = now - lastTapTime;
+    
+    if (tapDelay < 300 && tapDelay > 50) {
+      // ダブルタップ検出 - 家具をアクティブ化してドラッグ開始
+      handleDoubleClick(e as ThreeEvent<PointerEvent>);
+      if (tapTimeout) {
+        clearTimeout(tapTimeout);
+        setTapTimeout(null);
       }
+      return;
+    }
+    
+    setLastTapTime(now);
+    
+    // ポインター位置を記録（ドラッグ検出用）
+    setIsPointerDown(true);
+    setPointerStartPos({
+      x: e.nativeEvent.clientX,
+      y: e.nativeEvent.clientY
+    });
+    
+    // アクティブ状態の場合、移動検出の準備をする
+    if (isActive) {
+      const canvas = gl.domElement;
+      const rect = canvas.getBoundingClientRect();
+      setInitialMousePosition({
+        x: e.nativeEvent.clientX - rect.left,
+        y: e.nativeEvent.clientY - rect.top
+      });
+      setDragStartPosition({
+        x: furniture.position.x,
+        z: furniture.position.z
+      });
     }
   };
 
@@ -294,8 +324,37 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     };
   }, [isActive, furniture, updateFurniture, width, depth, rooms, camera, height, setActiveFurnitureId, scene.userData.orbitControls]);
 
+  // タイムアウトのクリーンアップ
+  React.useEffect(() => {
+    return () => {
+      if (tapTimeout) {
+        clearTimeout(tapTimeout);
+      }
+    };
+  }, [tapTimeout]);
+
   React.useEffect(() => {
     const handleGlobalPointerMove = (e: PointerEvent) => {
+      // ポインターが押下されていて、まだドラッグしていない場合、移動距離をチェック
+      if (isPointerDown && !isDragging && isActive && pointerStartPos) {
+        const moveDistance = Math.sqrt(
+          Math.pow(e.clientX - pointerStartPos.x, 2) + 
+          Math.pow(e.clientY - pointerStartPos.y, 2)
+        );
+        
+        // 5px以上移動したらドラッグ開始
+        if (moveDistance > 5) {
+          setIsDragging(true);
+          
+          // OrbitControlsを無効化
+          const controls = scene.userData.orbitControls;
+          if (controls) {
+            controls.enabled = false;
+          }
+        }
+        return;
+      }
+      
       if (!isDragging) return;
       
       // Shiftキーが押されている場合は垂直移動
@@ -396,6 +455,8 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
     const handleGlobalPointerUp = () => {
       setIsDragging(false);
       setIsVerticalDragging(false);
+      setIsPointerDown(false);
+      setPointerStartPos(null);
       
       // ドラッグ関連の状態をリセット
       setDragStartPosition(null);
@@ -408,7 +469,7 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
       }
     };
 
-    if (isDragging) {
+    if (isDragging || isPointerDown) {
       document.addEventListener('pointermove', handleGlobalPointerMove);
       document.addEventListener('pointerup', handleGlobalPointerUp);
     }
@@ -417,9 +478,9 @@ export default function Furniture3D({ furniture, isActive = false }: Furniture3D
       document.removeEventListener('pointermove', handleGlobalPointerMove);
       document.removeEventListener('pointerup', handleGlobalPointerUp);
     };
-  }, [isDragging, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height, depth, dragPlane, furniture.roomId, rooms, width, dragStartPosition, initialMousePosition]);
+  }, [isDragging, isPointerDown, isActive, pointerStartPos, furniture.id, furniture.position, updateFurniture, gl.domElement, camera, raycaster, scene.userData.orbitControls, isVerticalDragging, initialMouseY, initialFurnitureY, height, depth, dragPlane, furniture.roomId, rooms, width, dragStartPosition, initialMousePosition]);
 
-  const handleDoubleClick = (e: ThreeEvent<MouseEvent>) => {
+  const handleDoubleClick = (e: ThreeEvent<MouseEvent> | ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     setActiveFurnitureId(furniture.id);
     
