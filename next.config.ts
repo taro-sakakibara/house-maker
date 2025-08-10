@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     unoptimized: true, // 静的エクスポート時の画像最適化無効
   },
   // GitHub Pagesのベースパスを設定（リポジトリ名がURLに含まれる場合）
-  // basePath: '/house-maker', // 必要に応じてコメントアウト解除
+  basePath: '/house-maker',
   // eslint: {
   //   // GitHub Pages デプロイ時はESLintエラーを無視
   //   ignoreDuringBuilds: true,
